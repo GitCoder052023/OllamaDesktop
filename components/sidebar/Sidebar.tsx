@@ -128,9 +128,9 @@ export function Sidebar() {
               <div
                 key={conv.id}
                 onClick={() => selectConversation(conv.id)}
-                className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-[6px] text-[13px] cursor-pointer transition-all ${
+                className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-[6px] text-[13px] cursor-pointer transition-colors ${
                   isActive
-                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)] shadow-sm"
+                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)]"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                 }`}
               >

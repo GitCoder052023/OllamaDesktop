@@ -186,39 +186,35 @@ export function WindowChrome({
             {activeConversation?.title || "Ollama Desktop"}
           </span>
           {activeConversation?.model && (
-            <span className="text-[11px] font-mono px-2 py-0.5 rounded-[4px] bg-[var(--surface-hover)] text-[var(--text-secondary)] border border-[var(--border)]">
-              {activeConversation.model}
+            <span className="text-[11.5px] font-mono text-[var(--text-tertiary)]">
+              • {activeConversation.model}
             </span>
           )}
         </div>
       </div>
 
       {/* Right: Ollama Status, Spotlight Search & Actions */}
-      <div className="flex items-center gap-2">
-        {/* Ollama Connection Pill */}
+      <div className="flex items-center gap-1.5">
+        {/* Ollama Connection Indicator */}
         <button
           onClick={refreshOllamaStatus}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-            ollamaStatus.connected
-              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/15"
-              : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 hover:bg-red-500/15"
-          }`}
+          className="flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-[11.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
           title={
             ollamaStatus.connected
-              ? `Ollama v${ollamaStatus.version || "connected"} (${ollamaStatus.models.length} local model${
+              ? `Ollama v${ollamaStatus.version || "active"} • ${ollamaStatus.models.length} model${
                   ollamaStatus.models.length === 1 ? "" : "s"
-                }) - Click to refresh`
+                }`
               : "Ollama is offline. Click to test connection."
           }
         >
           <span
-            className={`w-2 h-2 rounded-full ${
-              ollamaStatus.connected ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+            className={`w-1.5 h-1.5 rounded-full ${
+              ollamaStatus.connected ? "bg-[#34C759]" : "bg-[#FF3B30]"
             }`}
           />
-          <span className="hidden sm:inline">
+          <span className="hidden sm:inline font-normal">
             {ollamaStatus.connected
-              ? `Ollama: ${ollamaStatus.models.length} model${ollamaStatus.models.length === 1 ? "" : "s"}`
+              ? `${ollamaStatus.models.length} model${ollamaStatus.models.length === 1 ? "" : "s"}`
               : "Offline"}
           </span>
         </button>

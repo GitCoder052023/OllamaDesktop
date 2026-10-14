@@ -74,11 +74,11 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
         <div className="shrink-0 pt-0.5 select-none">
           {isUser ? (
             <div className="w-7 h-7 rounded-[7px] bg-[var(--surface-active)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)]">
-              <User className="w-4 h-4 stroke-[2]" />
+              <User className="w-4 h-4 stroke-[1.8]" />
             </div>
           ) : (
-            <div className="w-7 h-7 rounded-[7px] bg-[var(--accent)] text-white flex items-center justify-center shadow-sm">
-              <Sparkles className="w-4 h-4 stroke-[2.2]" />
+            <div className="w-7 h-7 rounded-[7px] bg-[var(--surface-hover)] border border-[var(--border)] text-[var(--accent)] flex items-center justify-center shadow-none">
+              <Bot className="w-4 h-4 stroke-[1.8]" />
             </div>
           )}
         </div>
@@ -205,7 +205,9 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
           {/* Message Text Content */}
           <div className="selectable-text text-[13.5px] leading-relaxed text-[var(--text-primary)]">
             {isUser ? (
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <div className="inline-block bg-[var(--surface-hover)] border border-[var(--border)] px-3.5 py-2 rounded-[8px] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap max-w-2xl">
+                {message.content}
+              </div>
             ) : (
               <div className="markdown-body">
                 <ReactMarkdown
@@ -235,9 +237,9 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                   {message.content}
                 </ReactMarkdown>
 
-                {/* Streaming Blinking Cursor */}
+                {/* Streaming Cursor */}
                 {isStreaming && isLast && (
-                  <span className="inline-block w-2 h-4 ml-1 bg-[var(--accent)] align-middle animate-pulse rounded-sm" />
+                  <span className="inline-block w-1.5 h-3.5 ml-1 bg-[var(--accent)] align-middle animate-pulse rounded-sm" />
                 )}
               </div>
             )}
@@ -245,20 +247,17 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
 
           {/* Assistant Generation Stats Footer */}
           {isAssistant && message.stats && (
-            <div className="mt-3.5 pt-2 border-t border-[var(--border)]/60 flex items-center gap-3 text-[11px] text-[var(--text-tertiary)] select-none">
-              <div className="flex items-center gap-1 text-[var(--accent)] font-medium">
-                <Zap className="w-3 h-3" />
-                <span>
-                  {message.stats.tokensPerSecond
-                    ? `${message.stats.tokensPerSecond} tokens/s`
-                    : "Completed"}
+            <div className="mt-3 pt-1.5 flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] select-none font-mono">
+              {message.stats.tokensPerSecond ? (
+                <span className="text-[var(--text-secondary)]">
+                  {message.stats.tokensPerSecond} tok/s
                 </span>
-              </div>
+              ) : null}
               {message.stats.evalCount ? (
-                <span>• {message.stats.evalCount} tokens generated</span>
+                <span>• {message.stats.evalCount} tokens</span>
               ) : null}
               {message.stats.totalDuration ? (
-                <span>• {(message.stats.totalDuration / 1e9).toFixed(2)}s total</span>
+                <span>• {(message.stats.totalDuration / 1e9).toFixed(2)}s</span>
               ) : null}
             </div>
           )}

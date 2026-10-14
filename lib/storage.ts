@@ -8,8 +8,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   ollamaHost: "http://127.0.0.1:11434",
   defaultModel: "qwen2.5-coder:7b",
   temperature: 0.7,
-  systemPrompt: "You are a helpful, brilliant, and precise AI assistant running natively on macOS via Ollama.",
-  theme: "system",
+  systemPrompt: "You are a helpful, precise AI assistant running locally on macOS via Ollama.",
+  theme: "light",
   windowFrameStyle: "full",
   soundEffects: false,
 };

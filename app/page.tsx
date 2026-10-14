@@ -131,13 +131,13 @@ function DesktopApp() {
     <div
       className={`h-screen w-screen overflow-hidden ${
         isWindowed
-          ? "p-4 sm:p-8 md:p-12 bg-gradient-to-br from-indigo-950 via-slate-900 to-zinc-950 flex items-center justify-center"
+          ? "p-4 sm:p-6 md:p-8 bg-[#E5E5EA] dark:bg-[#121214] flex items-center justify-center"
           : "bg-[var(--bg-primary)]"
       }`}
     >
       {/* App Window Container */}
       <div
-        className={`flex flex-col h-full w-full overflow-hidden transition-all duration-300 ${
+        className={`flex flex-col h-full w-full overflow-hidden transition-all duration-200 ${
           isWindowed
             ? "max-w-6xl max-h-[92vh] rounded-[10px] border border-[var(--border)] shadow-[var(--shadow-window)] bg-[var(--bg-primary)]"
             : "rounded-none"

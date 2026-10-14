@@ -159,10 +159,10 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             handleUploadFiles(e.dataTransfer.files);
           }
         }}
-        className={`relative rounded-[12px] bg-[var(--bg-elevated)] border transition-all ${
+        className={`relative rounded-[10px] bg-[var(--bg-elevated)] border transition-colors ${
           isDragOver
             ? "drop-zone-active"
-            : "border-[var(--border)] focus-within:border-[var(--accent)] shadow-[var(--shadow-md)]"
+            : "border-[var(--border-strong)] focus-within:border-[var(--accent)] shadow-[var(--shadow-sm)]"
         }`}
       >
         {/* Pending Attachments Tray */}
@@ -243,19 +243,19 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
           {isStreaming ? (
             <button
               onClick={stopGeneration}
-              className="p-2 rounded-[8px] bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors shrink-0"
+              className="w-7 h-7 rounded-full bg-[#FF3B30] hover:bg-[#E0342A] text-white flex items-center justify-center transition-colors shrink-0"
               title="Stop Generation (Esc)"
             >
-              <Square className="w-3.5 h-3.5 fill-current" />
+              <Square className="w-3 h-3 fill-current" />
             </button>
           ) : (
             <button
               onClick={handleSend}
               disabled={!input.trim() && attachments.length === 0}
-              className="p-2 rounded-[8px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] shadow-sm transition-all shrink-0"
+              className="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] flex items-center justify-center transition-colors shrink-0"
               title="Send Message (Enter)"
             >
-              <ArrowUp className="w-4 h-4 stroke-[2.5]" />
+              <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
             </button>
           )}
         </div>
