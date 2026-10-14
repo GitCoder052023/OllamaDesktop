@@ -15,12 +15,14 @@ interface ModelSelectorProps {
   isOpen?: boolean;
   onClose?: () => void;
   className?: string;
+  align?: "center" | "left" | "right";
 }
 
 export function ModelSelector({
   isOpen: controlledIsOpen,
   onClose: controlledOnClose,
   className = "",
+  align = "center",
 }: ModelSelectorProps) {
   const {
     activeConversation,
@@ -102,23 +104,23 @@ export function ModelSelector({
       {/* Selector Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] border border-transparent hover:border-[var(--border)] transition-all text-[12.5px] font-medium text-[var(--text-primary)] select-none"
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[var(--surface-hover)] hover:bg-[var(--surface-active)] border border-[var(--border)] transition-all text-[12px] font-medium text-[var(--text-primary)] select-none shadow-[var(--shadow-sm)]"
         title="Select AI Model"
         aria-expanded={isOpen}
       >
         <Cpu className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
-        <span className="font-mono">{currentModel}</span>
+        <span className="font-mono text-[11.5px] truncate max-w-[150px] sm:max-w-[200px]">{currentModel}</span>
         {activeModelObj?.details.parameterSize && (
-          <span className="hidden sm:inline text-[11px] font-sans text-[var(--text-tertiary)]">
-            ({activeModelObj.details.parameterSize})
+          <span className="hidden sm:inline text-[10.5px] font-sans px-1 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-secondary)]">
+            {activeModelObj.details.parameterSize}
           </span>
         )}
-        <ChevronDown className="w-3.5 h-3.5 text-[var(--text-tertiary)] ml-0.5" />
+        <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] ml-0.5 shrink-0" />
       </button>
 
       {/* Popover Menu */}
       {isOpen && (
-        <div className="absolute left-0 mt-1.5 w-72 max-w-[90vw] rounded-[10px] bg-[var(--bg-elevated)] border border-[var(--border)] shadow-[var(--shadow-lg)] py-1.5 z-50 macos-vibrancy animate-in fade-in zoom-in-95 select-none">
+        <div className={`absolute ${align === "center" ? "left-1/2 -translate-x-1/2" : align === "right" ? "right-0" : "left-0"} mt-1.5 w-72 max-w-[90vw] rounded-[10px] bg-[var(--bg-elevated)] border border-[var(--border)] shadow-[var(--shadow-lg)] py-1.5 z-50 macos-vibrancy animate-in fade-in zoom-in-95 select-none`}>
           {/* Header */}
           <div className="px-3 py-1 flex items-center justify-between border-b border-[var(--border-subtle)] pb-1.5">
             <span className="text-[11px] font-semibold text-[var(--text-tertiary)] uppercase tracking-wider">

@@ -12,7 +12,6 @@ import {
   Check,
   X,
   Search,
-  Cpu,
 } from "lucide-react";
 
 const emptySubscribe = () => () => {};
@@ -116,11 +115,11 @@ export function Sidebar() {
     if (items.length === 0) return null;
 
     return (
-      <div className="mb-3.5">
-        <div className="px-2.5 py-1 text-[11px] font-semibold text-[var(--text-tertiary)] tracking-wider uppercase">
+      <div className="mb-3">
+        <div className="px-2 py-0.5 text-[10px] font-semibold text-[var(--text-tertiary)] tracking-wider uppercase select-none">
           {title}
         </div>
-        <div className="space-y-0.5 mt-0.5">
+        <div className="space-y-[1px] mt-0.5">
           {items.map((conv) => {
             const isActive = conv.id === activeId;
             const isEditing = editingId === conv.id;
@@ -129,18 +128,18 @@ export function Sidebar() {
               <div
                 key={conv.id}
                 onClick={() => selectConversation(conv.id)}
-                className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-[6px] text-[13px] cursor-pointer transition-colors ${
+                className={`group relative flex items-center justify-between px-2 py-1.5 rounded-[6px] text-[12.5px] cursor-pointer transition-colors ${
                   isActive
-                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)] shadow-sm"
+                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)]"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                 }`}
               >
-                {/* Left: Icon & Title */}
-                <div className="flex items-center gap-2 min-w-0 flex-1">
+                {/* Active Indicator & Icon */}
+                <div className="flex items-center gap-1.5 min-w-0 flex-1">
                   {conv.pinned ? (
-                    <Pin className="w-3.5 h-3.5 text-[var(--accent)] shrink-0 fill-[var(--accent)]/20" />
+                    <Pin className="w-3 h-3 text-[var(--accent)] shrink-0 fill-[var(--accent)]/30" />
                   ) : (
-                    <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-60" />
+                    <MessageSquare className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-[var(--accent)] opacity-90" : "opacity-40"}`} />
                   )}
 
                   {isEditing ? (
@@ -157,29 +156,31 @@ export function Sidebar() {
                           if (e.key === "Escape") cancelEditing();
                         }}
                         autoFocus
-                        className="w-full bg-[var(--bg-elevated)] border border-[var(--accent)] rounded-[4px] px-1.5 py-0.5 text-[12px] text-[var(--text-primary)] outline-none"
+                        className="w-full bg-[var(--bg-elevated)] border border-[var(--accent)] rounded-[4px] px-1.5 py-0.5 text-[11.5px] text-[var(--text-primary)] outline-none"
                       />
                       <button
                         onClick={() => saveEditing(conv.id)}
-                        className="p-1 hover:text-[var(--text-primary)] text-emerald-500"
+                        className="p-0.5 hover:text-[var(--text-primary)] text-emerald-500"
                         title="Save title"
                       >
-                        <Check className="w-3.5 h-3.5" />
+                        <Check className="w-3 h-3" />
                       </button>
                       <button
                         onClick={cancelEditing}
-                        className="p-1 hover:text-[var(--text-primary)] text-red-500"
+                        className="p-0.5 hover:text-[var(--text-primary)] text-red-500"
                         title="Cancel"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-3 h-3" />
                       </button>
                     </div>
                   ) : (
-                    <span className="truncate flex-1 text-[12.5px] leading-tight">{conv.title}</span>
+                    <span className="truncate flex-1 text-[12px] leading-tight select-none">
+                      {conv.title}
+                    </span>
                   )}
                 </div>
 
-                {/* Right: Actions on hover */}
+                {/* Contextual actions on hover */}
                 {!isEditing && (
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1 shrink-0">
                     <button
@@ -187,14 +188,14 @@ export function Sidebar() {
                         e.stopPropagation();
                         togglePinConversation(conv.id);
                       }}
-                      className="p-1 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-active)]"
+                      className="p-1 rounded-[3px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-active)] transition-colors"
                       title={conv.pinned ? "Unpin chat" : "Pin chat"}
                     >
                       <Pin className={`w-3 h-3 ${conv.pinned ? "fill-current" : ""}`} />
                     </button>
                     <button
                       onClick={(e) => startEditing(conv, e)}
-                      className="p-1 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-active)]"
+                      className="p-1 rounded-[3px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-active)] transition-colors"
                       title="Rename chat"
                     >
                       <Edit2 className="w-3 h-3" />
@@ -204,7 +205,7 @@ export function Sidebar() {
                         e.stopPropagation();
                         deleteConversation(conv.id);
                       }}
-                      className="p-1 rounded-[4px] text-[var(--text-tertiary)] hover:text-red-500 hover:bg-[var(--surface-active)]"
+                      className="p-1 rounded-[3px] text-[var(--text-tertiary)] hover:text-red-500 hover:bg-[var(--surface-active)] transition-colors"
                       title="Delete chat"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -220,54 +221,51 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-[260px] min-w-[260px] max-w-[260px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
-      {/* Search & New Chat Header */}
-      <div className="p-2.5 pb-2 space-y-1.5 border-b border-[var(--border-subtle)]">
-        <button
-          onClick={() => createConversation()}
-          className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text-primary)] text-[12px] font-medium shadow-[var(--shadow-sm)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-all"
-        >
-          <span className="flex items-center gap-2">
-            <Plus className="w-3.5 h-3.5 text-[var(--accent)]" />
-            New Chat
-          </span>
-          <kbd className="kbd">⌘N</kbd>
-        </button>
-
-        {/* Filter input */}
-        <div className="relative">
-          <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-2.5 top-1/2 -translate-y-1/2" />
+    <aside className="w-[240px] min-w-[240px] max-w-[240px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
+      {/* Integrated Search & New Chat Header */}
+      <div className="p-2 border-b border-[var(--border)] flex items-center gap-1.5">
+        <div className="relative flex-1">
+          <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-2 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-[6px] pl-8 pr-7 py-1 text-[12px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] outline-none focus:border-[var(--accent)] transition-colors"
+            className="w-full bg-[var(--surface-hover)] hover:bg-[var(--surface-active)] focus:bg-[var(--bg-elevated)] border border-transparent focus:border-[var(--accent)] rounded-[6px] pl-6.5 pr-6 py-1 text-[11.5px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] outline-none transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] p-0.5 rounded"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] p-0.5 rounded"
               title="Clear search"
             >
               <X className="w-3 h-3" />
             </button>
           )}
         </div>
+
+        <button
+          onClick={() => createConversation()}
+          className="h-7 w-7 rounded-[6px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors shrink-0"
+          title="New Chat (⌘N)"
+          aria-label="New Chat"
+        >
+          <Plus className="w-3.5 h-3.5 stroke-[2]" />
+        </button>
       </div>
 
       {/* Conversations Scroll Area */}
       <div className="flex-1 overflow-y-auto px-2 py-2">
         {conversations.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-4 text-center">
-            <MessageSquare className="w-7 h-7 text-[var(--text-tertiary)] stroke-[1.5] mb-2 opacity-50" />
+            <MessageSquare className="w-6 h-6 text-[var(--text-tertiary)] stroke-[1.5] mb-2 opacity-40" />
             <p className="text-[12px] font-medium text-[var(--text-secondary)]">No conversations</p>
-            <p className="text-[11px] text-[var(--text-tertiary)] mt-1">
+            <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
               Press <kbd className="kbd">⌘N</kbd> to begin
             </p>
           </div>
         ) : filteredConversations.length === 0 ? (
-          <div className="p-4 text-center text-[12px] text-[var(--text-tertiary)]">
+          <div className="p-4 text-center text-[11.5px] text-[var(--text-tertiary)]">
             No chats matching &quot;{searchQuery}&quot;
           </div>
         ) : (
@@ -281,18 +279,20 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Footer System Status */}
-      <div className="p-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-secondary)] bg-[var(--bg-sidebar)]">
-        <div className="flex items-center gap-1.5 truncate">
-          <Cpu className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
-          <span className="truncate font-mono">
-            {ollamaStatus.models.length > 0
-              ? `${ollamaStatus.models[0].name.split(":")[0]}`
-              : "No models"}
+      {/* Footer System Status - Quiet and Useful */}
+      <div className="px-2.5 py-2 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-tertiary)] bg-[var(--bg-sidebar)]">
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              ollamaStatus.connected ? "bg-emerald-500" : "bg-red-500"
+            }`}
+          />
+          <span className="text-[10.5px]">
+            {ollamaStatus.connected ? "Local engine ready" : "Ollama offline"}
           </span>
         </div>
-        <span className="text-[10px] text-[var(--text-tertiary)] shrink-0 font-medium">
-          {conversations.length} chat{conversations.length === 1 ? "" : "s"}
+        <span className="text-[10px] font-medium">
+          {conversations.length} {conversations.length === 1 ? "chat" : "chats"}
         </span>
       </div>
     </aside>

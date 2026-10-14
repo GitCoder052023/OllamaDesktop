@@ -137,7 +137,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
   const currentModel = activeConversation?.model || (ollamaStatus.models[0]?.name ?? "qwen2.5-coder:7b");
 
   return (
-    <div className="p-3 md:p-4 max-w-3xl mx-auto w-full select-none">
+    <div className="p-3 max-w-3xl mx-auto w-full select-none">
       {/* Hidden File Picker */}
       <input
         type="file"
@@ -243,7 +243,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            placeholder={`Message ${currentModel.split(":")[0]}... (Shift+Enter for newline)`}
+            placeholder={`Message ${currentModel.split(":")[0]}...`}
             className="selectable-text flex-1 max-h-[180px] min-h-[24px] py-1 bg-transparent border-0 outline-none resize-none text-[13.5px] leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-tertiary)] font-sans"
           />
 
@@ -269,14 +269,9 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
         </div>
       </div>
 
-      {/* Footer Info & Shortcut Hint */}
-      <div className="mt-1.5 px-2 flex items-center justify-between text-[11px] text-[var(--text-tertiary)] font-sans">
-        <span>Running locally via Ollama • Private execution</span>
-        <div className="flex items-center gap-1">
-          <span>Press</span>
-          <kbd className="kbd">↵</kbd>
-          <span>to send</span>
-        </div>
+      {/* Keyboard Shortcut Hint */}
+      <div className="mt-1 px-1 flex items-center justify-end text-[10.5px] text-[var(--text-tertiary)] font-sans select-none">
+        <span className="opacity-75">Shift + Return for newline</span>
       </div>
     </div>
   );
