@@ -12,6 +12,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import { SessionParametersPopover } from "@/components/toolbar/SessionParametersPopover";
 
 interface ChatInputProps {
   onSendMessage: (text: string, attachments: Attachment[]) => void;
@@ -137,7 +138,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
   const currentModel = activeConversation?.model || (ollamaStatus.models[0]?.name ?? "qwen2.5-coder:7b");
 
   return (
-    <div className="p-3 max-w-3xl mx-auto w-full select-none">
+    <div className="p-3 max-w-[820px] mx-auto w-full select-none">
       {/* Hidden File Picker */}
       <input
         type="file"
@@ -225,7 +226,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
         )}
 
         {/* Text Area & Action Controls */}
-        <div className="p-2.5 flex items-end gap-2">
+        <div className="p-2.5 flex items-end gap-1.5">
           {/* File Attachment Button */}
           <button
             onClick={() => fileInputRef.current?.click()}
@@ -235,6 +236,9 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
           >
             <Paperclip className="w-4 h-4 stroke-[1.8]" />
           </button>
+
+          {/* Session Parameters Quick Popover */}
+          <SessionParametersPopover buttonVariant="compact" align="left" />
 
           {/* Text Area */}
           <textarea
@@ -269,9 +273,13 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
         </div>
       </div>
 
-      {/* Keyboard Shortcut Hint */}
-      <div className="mt-1 px-1 flex items-center justify-end text-[10.5px] text-[var(--text-tertiary)] font-sans select-none">
-        <span className="opacity-75">Shift + Return for newline</span>
+      {/* Footer Info & Shortcut Helper */}
+      <div className="mt-1.5 px-1 flex items-center justify-between text-[10.5px] text-[var(--text-tertiary)] font-sans select-none">
+        <div className="flex items-center gap-1.5 font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>{currentModel}</span>
+        </div>
+        <span className="opacity-75">Shift + Return for newline • Return to send</span>
       </div>
     </div>
   );

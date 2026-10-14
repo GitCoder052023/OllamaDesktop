@@ -59,6 +59,10 @@ interface ChatContextType {
   regenerateLastMessage: () => Promise<void>;
   stopGeneration: () => void;
   changeConversationModel: (conversationId: string, model: string) => void;
+  updateConversationParameters: (
+    id: string,
+    params: { systemPrompt?: string; temperature?: number; contextLength?: number }
+  ) => void;
   updateSettings: (newSettings: Partial<AppSettings>) => void;
   showToast: (message: string, type?: "success" | "info" | "error") => void;
   dismissToast: (id: string) => void;
@@ -289,6 +293,22 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const updateConversationParameters = useCallback(
+    (
+      id: string,
+      params: { systemPrompt?: string; temperature?: number; contextLength?: number }
+    ) => {
+      setConversations((prev) => {
+        const updated = prev.map((c) =>
+          c.id === id ? { ...c, ...params, updatedAt: Date.now() } : c
+        );
+        saveStoredConversations(updated);
+        return updated;
+      });
+    },
+    []
+  );
+
   const stopGeneration = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -408,11 +428,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         userPayloadItem.images = imagesPayload;
       }
 
+      const effectiveSystemPrompt = targetConv.systemPrompt || settings.systemPrompt;
       const fullMessages: ChatPayloadMessage[] = [];
-      if (settings.systemPrompt) {
+      if (effectiveSystemPrompt) {
         fullMessages.push({
           role: "system",
-          content: settings.systemPrompt,
+          content: effectiveSystemPrompt,
         });
       }
       fullMessages.push(...history, userPayloadItem);
@@ -425,6 +446,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       let finalStats: MessageStats | undefined;
 
       try {
+        const optionsPayload: Record<string, unknown> = {
+          temperature: targetConv.temperature ?? settings.temperature,
+        };
+        if (targetConv.contextLength) {
+          optionsPayload.num_ctx = targetConv.contextLength;
+        }
+
         const response = await fetch("/api/ollama/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -432,9 +460,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             model: targetConv.model,
             messages: fullMessages,
             host: settings.ollamaHost,
-            options: {
-              temperature: settings.temperature,
-            },
+            options: optionsPayload,
           }),
           signal: abortController.signal,
         });
@@ -660,6 +686,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         regenerateLastMessage,
         stopGeneration,
         changeConversationModel,
+        updateConversationParameters,
         updateSettings,
         showToast,
         dismissToast,

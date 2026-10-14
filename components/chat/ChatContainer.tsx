@@ -41,7 +41,7 @@ export function ChatContainer() {
 
   return (
     <main className="flex-1 flex flex-col h-full overflow-hidden bg-[var(--bg-primary)] relative select-none">
-      {/* Messages Scroll Area - Clean canvas without duplicate subheaders */}
+      {/* Messages Scroll Area - Responsive 760-860px reading column */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
@@ -50,12 +50,11 @@ export function ChatContainer() {
         {messages.length === 0 ? (
           <EmptyState
             onSelectPrompt={(prompt) => {
-              // Populate the composer so user can inspect, append or edit before sending
               setSelectedPrompt(prompt);
             }}
           />
         ) : (
-          <div className="py-4 md:py-6 max-w-3xl mx-auto w-full px-4 md:px-6">
+          <div className="py-4 md:py-6 max-w-[820px] mx-auto w-full px-4 sm:px-6">
             {messages.map((message, idx) => (
               <ChatMessageItem
                 key={message.id}

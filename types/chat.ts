@@ -41,6 +41,8 @@ export interface Conversation {
   messages: ChatMessage[];
   pinned?: boolean;
   systemPrompt?: string;
+  temperature?: number;
+  contextLength?: number;
 }
 
 export interface OllamaModelDetails {

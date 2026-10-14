@@ -3,6 +3,7 @@
 import React from "react";
 import { useChat } from "@/context/ChatContext";
 import { ModelSelector } from "@/components/model-selector/ModelSelector";
+import { SessionParametersPopover } from "@/components/toolbar/SessionParametersPopover";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -98,9 +99,10 @@ export function AppToolbar({
         </button>
       </div>
 
-      {/* Center: The Single Cohesive Model Selector */}
-      <div className="flex-1 flex items-center justify-center px-2 min-w-0">
+      {/* Center: The Single Cohesive Model Station */}
+      <div className="flex-1 flex items-center justify-center gap-1.5 px-2 min-w-0">
         <ModelSelector align="center" />
+        <SessionParametersPopover align="center" buttonVariant="toolbar" />
       </div>
 
       {/* Right Toolbar Controls */}

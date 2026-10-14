@@ -136,6 +136,9 @@ export function Sidebar() {
               >
                 {/* Active Indicator & Icon */}
                 <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                  {isActive && (
+                    <span className="w-1 h-3 rounded-full bg-[var(--accent)] shrink-0" />
+                  )}
                   {conv.pinned ? (
                     <Pin className="w-3 h-3 text-[var(--accent)] shrink-0 fill-[var(--accent)]/30" />
                   ) : (
@@ -221,7 +224,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-[240px] min-w-[240px] max-w-[240px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
+    <aside className="w-[260px] min-w-[260px] max-w-[260px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
       {/* Integrated Search & New Chat Header */}
       <div className="p-2 border-b border-[var(--border)] flex items-center gap-1.5">
         <div className="relative flex-1">
