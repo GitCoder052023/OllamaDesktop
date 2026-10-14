@@ -52,17 +52,26 @@ export function ModelSelector({
     [controlledOnClose]
   );
 
-  // Close on outside click
+  // Close on outside click or Escape key
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
     if (isOpen) {
       document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener("keydown", handleKeyDown);
     }
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isOpen, setIsOpen]);
 
   const currentModel = activeConversation?.model || (ollamaStatus.models[0]?.name ?? "qwen2.5-coder:7b");
@@ -109,25 +118,24 @@ export function ModelSelector({
       {/* Selector Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[var(--surface-hover)] hover:bg-[var(--surface-active)] border border-[var(--border)] transition-all text-[12px] font-medium text-[var(--text-primary)] select-none shadow-[var(--shadow-sm)]"
+        className={`h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[12px] font-medium transition-colors select-none ${
+          isOpen
+            ? "bg-[var(--surface-active)] text-[var(--text-primary)]"
+            : "text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)]"
+        }`}
         title="Active Model & Technical Specifications"
         aria-expanded={isOpen}
       >
-        <Cpu className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
-        <span className="font-mono text-[11.5px] truncate max-w-[140px] sm:max-w-[180px]">
+        <Cpu className="w-3.5 h-3.5 text-[var(--accent)] shrink-0 opacity-90" />
+        <span className="font-mono text-[11.5px] truncate max-w-[130px] sm:max-w-[170px]">
           {currentModel}
         </span>
         {activeModelObj?.details.parameterSize && (
-          <span className="hidden sm:inline text-[10px] font-sans px-1.5 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-secondary)] font-medium">
+          <span className="hidden sm:inline text-[9.5px] font-sans px-1.5 py-0.5 rounded bg-[var(--surface-active)] text-[var(--text-secondary)] font-medium leading-none">
             {activeModelObj.details.parameterSize}
           </span>
         )}
-        {activeModelObj?.details.quantizationLevel && (
-          <span className="hidden md:inline text-[9.5px] font-mono px-1 py-0.2 rounded border border-[var(--border)] text-[var(--text-tertiary)]">
-            {activeModelObj.details.quantizationLevel}
-          </span>
-        )}
-        <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] ml-0.5 shrink-0" />
+        <ChevronDown className="w-3 h-3 text-[var(--text-tertiary)] ml-0.5 shrink-0 opacity-70" />
       </button>
 
       {/* Popover Menu */}

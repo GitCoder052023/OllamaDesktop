@@ -15,6 +15,7 @@ import {
   Minimize2,
   Share2,
   Trash2,
+  Square,
 } from "lucide-react";
 
 interface AppToolbarProps {
@@ -38,6 +39,8 @@ export function AppToolbar({
     ollamaStatus,
     refreshOllamaStatus,
     showToast,
+    isStreaming,
+    stopGeneration,
   } = useChat();
 
   const handleStatusClick = async () => {
@@ -65,9 +68,11 @@ export function AppToolbar({
     showToast("Chat exported as Markdown", "success");
   };
 
+  const hasMessages = Boolean(activeConversation && activeConversation.messages.length > 0);
+
   return (
     <header className="h-[48px] min-h-[48px] select-none border-b border-[var(--border)] bg-[var(--bg-toolbar)] macos-vibrancy flex items-center justify-between px-3 z-30 relative">
-      {/* Left Toolbar Controls */}
+      {/* 1. Left Region: Navigation */}
       <div className="flex items-center gap-1 shrink-0">
         {/* Sidebar Toggle */}
         <button
@@ -99,17 +104,48 @@ export function AppToolbar({
         </button>
       </div>
 
-      {/* Center: The Single Cohesive Model Station */}
-      <div className="flex-1 flex items-center justify-center gap-1.5 px-2 min-w-0">
-        <ModelSelector align="center" />
-        <SessionParametersPopover align="center" buttonVariant="toolbar" />
+      {/* 2. Center Region: Active Context */}
+      <div className="flex-1 flex items-center justify-center px-2 min-w-0">
+        {hasMessages && activeConversation ? (
+          <div className="flex items-center gap-2 min-w-0 max-w-[500px]">
+            <span
+              className="text-[12.5px] font-medium text-[var(--text-primary)] truncate max-w-[120px] sm:max-w-[190px] md:max-w-[250px]"
+              title={activeConversation.title}
+            >
+              {activeConversation.title}
+            </span>
+            <span className="text-[var(--text-tertiary)] text-[10px] select-none shrink-0">•</span>
+            <div className="flex items-center gap-0.5 shrink-0">
+              <ModelSelector align="center" />
+              <SessionParametersPopover align="center" buttonVariant="icon" />
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-0.5 shrink-0">
+            <ModelSelector align="center" />
+            <SessionParametersPopover align="center" buttonVariant="icon" />
+          </div>
+        )}
       </div>
 
-      {/* Right Toolbar Controls */}
+      {/* 3. Right Region: Utilities & Status */}
       <div className="flex items-center gap-1 shrink-0">
+        {/* Streaming Stop Control */}
+        {isStreaming && (
+          <button
+            onClick={stopGeneration}
+            className="h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 active:bg-red-500/15 transition-colors shrink-0 mr-0.5"
+            title="Stop Generation (Esc)"
+            aria-label="Stop Generation"
+          >
+            <Square className="w-3 h-3 fill-current animate-pulse" />
+            <span className="hidden sm:inline">Stop</span>
+          </button>
+        )}
+
         {/* Contextual Conversation Actions (When active conversation has messages) */}
-        {activeConversation && activeConversation.messages.length > 0 && (
-          <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-[var(--border)]">
+        {hasMessages && (
+          <div className="flex items-center gap-0.5">
             <button
               onClick={handleExportChat}
               className="h-7 w-7 rounded-[6px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
@@ -129,14 +165,15 @@ export function AppToolbar({
           </div>
         )}
 
-        {/* Ollama Connection Indicator Pill */}
+        {/* Hairline Divider before global actions */}
+        {(hasMessages || isStreaming) && (
+          <div className="w-[1px] h-3.5 bg-[var(--border)] shrink-0 mx-0.5" />
+        )}
+
+        {/* Quiet Ollama Connection Status Button */}
         <button
           onClick={handleStatusClick}
-          className={`h-7 flex items-center gap-1.5 px-2 rounded-[6px] text-[11.5px] border transition-colors ${
-            ollamaStatus.connected
-              ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15"
-              : "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/15"
-          }`}
+          className="h-7 px-1.5 sm:px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
           title={
             ollamaStatus.connected
               ? `Ollama connected (${ollamaStatus.models.length} model${
@@ -144,47 +181,49 @@ export function AppToolbar({
                 }) at ${ollamaStatus.host}. Click to re-check.`
               : `Cannot reach Ollama at ${ollamaStatus.host}. Click to retry.`
           }
+          aria-label="Ollama connection status"
         >
           <span
-            className={`w-1.5 h-1.5 rounded-full ${
+            className={`w-2 h-2 rounded-full shrink-0 ${
               ollamaStatus.connected ? "bg-emerald-500" : "bg-red-500 animate-pulse"
             }`}
           />
-          <span className="hidden md:inline font-medium">
-            {ollamaStatus.connected
-              ? `${ollamaStatus.models.length} Model${ollamaStatus.models.length === 1 ? "" : "s"}`
-              : "Offline"}
+          <span className="hidden xl:inline text-[11px] text-[var(--text-tertiary)] font-normal">
+            {ollamaStatus.connected ? "Connected" : "Offline"}
           </span>
         </button>
 
         {/* Command Search Trigger */}
         <button
           onClick={() => setIsCommandPaletteOpen(true)}
-          className="h-7 flex items-center gap-1.5 px-2 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] border border-[var(--border)] transition-colors text-[11.5px]"
+          className="h-7 px-1.5 sm:px-2 rounded-[6px] flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors text-[11.5px]"
           title="Search Conversations & Commands (⌘K)"
+          aria-label="Search and Commands"
         >
-          <Search className="w-3.5 h-3.5" />
-          <kbd className="kbd text-[10px]">⌘K</kbd>
+          <Search className="w-3.5 h-3.5 stroke-[1.8]" />
+          <kbd className="hidden md:inline font-mono text-[9px] px-1 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-tertiary)]">
+            ⌘K
+          </kbd>
         </button>
 
-        {/* Shortcuts Trigger */}
+        {/* Keyboard Shortcuts Trigger */}
         <button
           onClick={() => setIsShortcutsOpen(true)}
           className="h-7 w-7 rounded-[6px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
           title="Keyboard Shortcuts (⌘/)"
           aria-label="Keyboard Shortcuts"
         >
-          <HelpCircle className="w-4 h-4 stroke-[1.8]" />
+          <HelpCircle className="w-3.5 h-3.5 stroke-[1.8]" />
         </button>
 
-        {/* Settings Trigger */}
+        {/* Preferences / Settings Trigger */}
         <button
           onClick={() => setIsSettingsOpen(true)}
           className="h-7 w-7 rounded-[6px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
           title="Preferences (⌘,)"
           aria-label="Preferences"
         >
-          <Settings className="w-4 h-4 stroke-[1.8]" />
+          <Settings className="w-3.5 h-3.5 stroke-[1.8]" />
         </button>
 
         {/* Window Viewport Presentation Toggle (Optional frame) */}
@@ -196,9 +235,9 @@ export function AppToolbar({
             aria-label="Toggle Window Frame Style"
           >
             {isWindowed ? (
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Maximize2 className="w-3.5 h-3.5 stroke-[1.8]" />
             ) : (
-              <Minimize2 className="w-3.5 h-3.5" />
+              <Minimize2 className="w-3.5 h-3.5 stroke-[1.8]" />
             )}
           </button>
         )}

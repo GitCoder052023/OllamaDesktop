@@ -9,7 +9,7 @@ interface SessionParametersPopoverProps {
   onClose?: () => void;
   className?: string;
   align?: "left" | "center" | "right";
-  buttonVariant?: "toolbar" | "compact";
+  buttonVariant?: "toolbar" | "compact" | "icon";
 }
 
 export function SessionParametersPopover({
@@ -35,17 +35,26 @@ export function SessionParametersPopover({
     [controlledOnClose]
   );
 
-  // Close on outside click
+  // Close on outside click or Escape key
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
     if (isOpen) {
       document.addEventListener("mousedown", handleOutsideClick);
+      document.addEventListener("keydown", handleKeyDown);
     }
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isOpen, setIsOpen]);
 
   const currentTemperature = activeConversation?.temperature ?? settings.temperature ?? 0.7;
@@ -115,14 +124,40 @@ export function SessionParametersPopover({
     },
   ];
 
+  const hasCustomParams = Boolean(
+    activeConversation &&
+      (activeConversation.temperature !== undefined ||
+        activeConversation.contextLength !== undefined ||
+        activeConversation.systemPrompt !== undefined)
+  );
+
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       {/* Trigger Button */}
-      {buttonVariant === "toolbar" ? (
+      {buttonVariant === "icon" || buttonVariant === "compact" ? (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`h-7 w-7 rounded-[6px] flex items-center justify-center transition-colors relative ${
+            isOpen || hasCustomParams
+              ? "bg-[var(--surface-active)] text-[var(--accent)]"
+              : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)]"
+          }`}
+          title={`Generation Parameters (${getTemperatureDescriptor(currentTemperature)})${
+            hasCustomParams ? " • Custom parameters active" : ""
+          }`}
+          aria-expanded={isOpen}
+          aria-label="Generation Parameters"
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
+          {hasCustomParams && (
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[var(--accent)] ring-1 ring-[var(--bg-toolbar)]" />
+          )}
+        </button>
+      ) : (
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] font-mono border transition-all ${
-            isOpen || activeConversation?.temperature !== undefined || activeConversation?.systemPrompt
+            isOpen || hasCustomParams
               ? "bg-[var(--surface-active)] border-[var(--accent)] text-[var(--text-primary)]"
               : "bg-[var(--surface-hover)] hover:bg-[var(--surface-active)] border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           }`}
@@ -134,15 +169,6 @@ export function SessionParametersPopover({
           <span className="px-1 py-0.2 rounded bg-[var(--surface-active)] text-[10px] text-[var(--text-secondary)]">
             T:{currentTemperature.toFixed(2)}
           </span>
-        </button>
-      ) : (
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
-          title="Adjust Temperature & Session Parameters"
-          aria-label="Parameters"
-        >
-          <SlidersHorizontal className="w-3.5 h-3.5" />
         </button>
       )}
 
