@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "macos-design": {
+      "source": "ceorkm/macos-design-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "c408be5d47d79cb8b1f68d2ec5f3f7a1dc5b8899126c4dc724ac3c4f9a48e535"
+    }
+  }
+}
