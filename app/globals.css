@@ -1,69 +1,147 @@
 @import "tailwindcss";
 
 :root {
-  /* macOS Native Light Theme (Default) */
+  /* macOS Native Light Appearance (Default) */
   --bg-primary: #FFFFFF;
   --bg-secondary: #F5F5F7;
   --bg-tertiary: #EBEBED;
   --bg-elevated: #FFFFFF;
-  --bg-sidebar: rgba(246, 246, 246, 0.88);
-  --bg-titlebar: rgba(246, 246, 246, 0.94);
+  --bg-sidebar: rgba(246, 246, 248, 0.88);
+  --bg-toolbar: rgba(255, 255, 255, 0.88);
+  --bg-input: #FFFFFF;
 
   --text-primary: #1D1D1F;
   --text-secondary: #6E6E73;
-  --text-tertiary: #8E8E93;
+  --text-tertiary: #86868B;
+  --text-quaternary: #AEAEB2;
 
   --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --border-subtle: rgba(0, 0, 0, 0.04);
 
   --accent: #007AFF;
-  --accent-hover: #0062D2;
+  --accent-hover: #0066D6;
+  --accent-active: #0055B3;
+  --accent-subtle: rgba(0, 122, 255, 0.08);
   --accent-rgb: 0, 122, 255;
 
   --surface-hover: rgba(0, 0, 0, 0.04);
-  --surface-active: rgba(0, 0, 0, 0.07);
+  --surface-active: rgba(0, 0, 0, 0.08);
+  --surface-selected: rgba(0, 122, 255, 0.10);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-  --shadow-window: 0 0 0 0.5px rgba(0, 0, 0, 0.14), 0 16px 40px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.10), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-window: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 20px 50px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
 
   --kbd-bg: rgba(0, 0, 0, 0.06);
   --kbd-border: rgba(0, 0, 0, 0.12);
 
+  --code-bg: #F6F8FA;
+  --code-header-bg: #EEF1F4;
+  --code-border: rgba(0, 0, 0, 0.08);
+  --code-text: #24292F;
+
+  --status-success: #34C759;
+  --status-warning: #FF9500;
+  --status-error: #FF3B30;
+
   --ease-mac: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 [data-theme="dark"] {
+  /* macOS Native Dark Appearance */
   --bg-primary: #1C1C1E;
   --bg-secondary: #2C2C2E;
   --bg-tertiary: #3A3A3C;
-  --bg-elevated: #2C2C2E;
-  --bg-sidebar: rgba(32, 32, 34, 0.85);
-  --bg-titlebar: rgba(30, 30, 32, 0.90);
+  --bg-elevated: #28282A;
+  --bg-sidebar: rgba(28, 28, 30, 0.88);
+  --bg-toolbar: rgba(36, 36, 38, 0.88);
+  --bg-input: #242426;
 
   --text-primary: #F5F5F7;
   --text-secondary: #98989D;
   --text-tertiary: #636366;
+  --text-quaternary: #48484A;
 
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-subtle: rgba(255, 255, 255, 0.04);
 
   --accent: #0A84FF;
   --accent-hover: #409CFF;
+  --accent-active: #64B5FF;
+  --accent-subtle: rgba(10, 132, 255, 0.15);
   --accent-rgb: 10, 132, 255;
 
   --surface-hover: rgba(255, 255, 255, 0.06);
-  --surface-active: rgba(255, 255, 255, 0.1);
+  --surface-active: rgba(255, 255, 255, 0.10);
+  --surface-selected: rgba(10, 132, 255, 0.18);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
-  --shadow-window: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 16px 40px rgba(0, 0, 0, 0.45), 0 40px 80px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.50), 0 0 0 0.5px rgba(255, 255, 255, 0.10);
+  --shadow-window: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 24px 60px rgba(0, 0, 0, 0.65), 0 8px 24px rgba(0, 0, 0, 0.45);
 
-  --kbd-bg: rgba(255, 255, 255, 0.12);
-  --kbd-border: rgba(255, 255, 255, 0.18);
+  --kbd-bg: rgba(255, 255, 255, 0.10);
+  --kbd-border: rgba(255, 255, 255, 0.16);
+
+  --code-bg: #161618;
+  --code-header-bg: #1F1F22;
+  --code-border: rgba(255, 255, 255, 0.08);
+  --code-text: #E6EDF3;
+
+  --status-success: #30D158;
+  --status-warning: #FF9F0A;
+  --status-error: #FF453A;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #1C1C1E;
+    --bg-secondary: #2C2C2E;
+    --bg-tertiary: #3A3A3C;
+    --bg-elevated: #28282A;
+    --bg-sidebar: rgba(28, 28, 30, 0.88);
+    --bg-toolbar: rgba(36, 36, 38, 0.88);
+    --bg-input: #242426;
+
+    --text-primary: #F5F5F7;
+    --text-secondary: #98989D;
+    --text-tertiary: #636366;
+    --text-quaternary: #48484A;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --border-subtle: rgba(255, 255, 255, 0.04);
+
+    --accent: #0A84FF;
+    --accent-hover: #409CFF;
+    --accent-active: #64B5FF;
+    --accent-subtle: rgba(10, 132, 255, 0.15);
+    --accent-rgb: 10, 132, 255;
+
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --surface-active: rgba(255, 255, 255, 0.10);
+    --surface-selected: rgba(10, 132, 255, 0.18);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.50), 0 0 0 0.5px rgba(255, 255, 255, 0.10);
+    --shadow-window: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 24px 60px rgba(0, 0, 0, 0.65), 0 8px 24px rgba(0, 0, 0, 0.45);
+
+    --kbd-bg: rgba(255, 255, 255, 0.10);
+    --kbd-border: rgba(255, 255, 255, 0.16);
+
+    --code-bg: #161618;
+    --code-header-bg: #1F1F22;
+    --code-border: rgba(255, 255, 255, 0.08);
+    --code-text: #E6EDF3;
+
+    --status-success: #30D158;
+    --status-warning: #FF9F0A;
+    --status-error: #FF453A;
+  }
 }
 
 * {
@@ -90,10 +168,10 @@ html, body {
   user-select: text;
 }
 
-/* Native macOS thin scrollbars */
+/* Thin macOS-style native scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -101,20 +179,20 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
-  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(0, 0, 0, 0.28);
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.32);
 }
 
 /* macOS Vibrancy backdrop filter */
@@ -123,12 +201,12 @@ html, body {
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
-/* macOS KBD styling */
+/* macOS Keyboard Shortcut Badge */
 .kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5px 5px;
+  padding: 1px 4.5px;
   font-size: 11px;
   line-height: 12px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
@@ -136,41 +214,20 @@ html, body {
   border-radius: 4px;
   border: 0.5px solid var(--kbd-border);
   color: inherit;
-  opacity: 0.8;
-  gap: 2px;
-}
-
-/* macOS traffic light circle */
-.traffic-light {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: all 0.15s ease;
-}
-
-.traffic-light svg {
-  opacity: 0;
-  transition: opacity 0.1s ease;
-}
-
-.traffic-lights-group:hover .traffic-light svg {
-  opacity: 1;
+  opacity: 0.85;
+  letter-spacing: -0.01em;
 }
 
 /* Drop zone highlight */
 .drop-zone-active {
   border: 2px dashed var(--accent) !important;
-  background: rgba(var(--accent-rgb), 0.05) !important;
+  background: var(--accent-subtle) !important;
 }
 
-/* Markdown styling inside assistant message */
+/* Assistant Message Markdown Styling */
 .markdown-body {
   font-size: 13.5px;
-  line-height: 1.6;
+  line-height: 1.62;
   color: var(--text-primary);
   word-break: break-word;
 }
@@ -190,57 +247,28 @@ html, body {
 .markdown-body h4 {
   font-weight: 600;
   letter-spacing: -0.015em;
-  margin-top: 1.25em;
-  margin-bottom: 0.5em;
+  margin-top: 1.2em;
+  margin-bottom: 0.45em;
   color: var(--text-primary);
 }
 
-.markdown-body h1 { font-size: 17px; line-height: 22px; }
-.markdown-body h2 { font-size: 15px; line-height: 20px; }
-.markdown-body h3 { font-size: 14px; line-height: 19px; }
-.markdown-body h4 { font-size: 13px; line-height: 18px; }
+.markdown-body h1 { font-size: 18px; line-height: 24px; }
+.markdown-body h2 { font-size: 16px; line-height: 22px; }
+.markdown-body h3 { font-size: 14.5px; line-height: 20px; }
+.markdown-body h4 { font-size: 13.5px; line-height: 19px; }
 
 .markdown-body code:not(pre code) {
   font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface-hover);
+  border: 0.5px solid var(--border);
   padding: 1.5px 5px;
   border-radius: 4px;
-  color: #0969da;
+  color: var(--accent);
 }
 
 [data-theme="dark"] .markdown-body code:not(pre code) {
-  background: rgba(255, 255, 255, 0.08);
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
-  color: #58a6ff;
-}
-
-.markdown-body pre {
-  margin: 0.85em 0;
-  padding: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 0.5px solid var(--border);
-  background: #F6F8FA;
-}
-
-[data-theme="dark"] .markdown-body pre {
-  background: #18181b;
-}
-
-.markdown-body pre code {
-  font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
-  font-size: 12.5px;
-  line-height: 1.55;
-  display: block;
-  padding: 12px 14px;
-  overflow-x: auto;
-  color: #1F2328;
-}
-
-[data-theme="dark"] .markdown-body pre code {
-  color: #f4f4f5;
+  color: var(--accent-hover);
 }
 
 .markdown-body ul,
@@ -286,4 +314,124 @@ html, body {
   border: none;
   border-top: 0.5px solid var(--border);
   margin: 1.2em 0;
+}
+
+.markdown-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-body a:hover {
+  color: var(--accent-hover);
+}
+
+/* Prism Token Syntax Highlighting */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d;
+  font-style: italic;
+}
+
+[data-theme="dark"] .token.comment,
+[data-theme="dark"] .token.prolog,
+[data-theme="dark"] .token.doctype,
+[data-theme="dark"] .token.cdata {
+  color: #8b949e;
+}
+
+.token.punctuation {
+  color: #586069;
+}
+
+[data-theme="dark"] .token.punctuation {
+  color: #8b949e;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #0550ae;
+}
+
+[data-theme="dark"] .token.property,
+[data-theme="dark"] .token.tag,
+[data-theme="dark"] .token.boolean,
+[data-theme="dark"] .token.number,
+[data-theme="dark"] .token.constant,
+[data-theme="dark"] .token.symbol,
+[data-theme="dark"] .token.deleted {
+  color: #79c0ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #0a3069;
+}
+
+[data-theme="dark"] .token.selector,
+[data-theme="dark"] .token.attr-name,
+[data-theme="dark"] .token.string,
+[data-theme="dark"] .token.char,
+[data-theme="dark"] .token.builtin,
+[data-theme="dark"] .token.inserted {
+  color: #a5d6ff;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #cf222e;
+}
+
+[data-theme="dark"] .token.operator,
+[data-theme="dark"] .token.entity,
+[data-theme="dark"] .token.url {
+  color: #ff7b72;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #cf222e;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .token.atrule,
+[data-theme="dark"] .token.attr-value,
+[data-theme="dark"] .token.keyword {
+  color: #ff7b72;
+}
+
+.token.function,
+.token.class-name {
+  color: #8250df;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .token.function,
+[data-theme="dark"] .token.class-name {
+  color: #d2a8ff;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #953800;
+}
+
+[data-theme="dark"] .token.regex,
+[data-theme="dark"] .token.important,
+[data-theme="dark"] .token.variable {
+  color: #ffa657;
 }

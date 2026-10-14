@@ -21,12 +21,24 @@ export async function POST(request: NextRequest) {
 
     const cleanHost = (host || process.env.OLLAMA_HOST || "http://127.0.0.1:11434").replace(/\/$/, "");
 
+    interface InboundMessage {
+      role?: string;
+      content?: string;
+      images?: string[];
+    }
+
+    interface OutboundMessage {
+      role: string;
+      content: string;
+      images?: string[];
+    }
+
     // Prepare payload for Ollama /api/chat
     const ollamaPayload = {
       model,
-      messages: messages.map((m: any) => {
-        const item: any = {
-          role: m.role,
+      messages: (messages as InboundMessage[]).map((m: InboundMessage) => {
+        const item: OutboundMessage = {
+          role: m.role || "user",
           content: m.content || "",
         };
         if (m.images && Array.isArray(m.images) && m.images.length > 0) {
@@ -80,10 +92,11 @@ export async function POST(request: NextRequest) {
         "X-Accel-Buffering": "no",
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : "Failed to communicate with Ollama";
     return new Response(
       JSON.stringify({
-        error: error.message || "Failed to communicate with Ollama",
+        error: errorMsg,
       }),
       {
         status: 500,

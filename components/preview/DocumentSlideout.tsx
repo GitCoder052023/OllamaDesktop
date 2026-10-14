@@ -9,7 +9,6 @@ import {
   FileText,
   FileCode,
   Download,
-  ExternalLink,
 } from "lucide-react";
 
 export function DocumentSlideout() {

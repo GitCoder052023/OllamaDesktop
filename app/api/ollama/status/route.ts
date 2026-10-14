@@ -42,10 +42,27 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const rawModels = tagsData.models || [];
-    const models = rawModels.map((m: any) => {
+    interface RawOllamaModel {
+      name?: string;
+      model?: string;
+      modified_at?: string;
+      size?: number;
+      digest?: string;
+      details?: {
+        family?: string;
+        families?: string[];
+        parameter_size?: string;
+        quantization_level?: string;
+        context_length?: number;
+      };
+      capabilities?: string[];
+    }
+
+    const rawModels: RawOllamaModel[] = tagsData.models || [];
+    const models = rawModels.map((m: RawOllamaModel) => {
       const caps: string[] = m.capabilities || [];
-      const nameLower = (m.name || "").toLowerCase();
+      const name = m.name || "";
+      const nameLower = name.toLowerCase();
       const isVision =
         caps.includes("vision") ||
         nameLower.includes("vision") ||
@@ -78,13 +95,14 @@ export async function GET(request: NextRequest) {
       version,
       models,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : "Failed to reach Ollama";
     return NextResponse.json({
       connected: false,
       host: cleanHost,
       version: null,
       models: [],
-      error: error.message || "Failed to reach Ollama",
+      error: errorMsg,
     });
   }
 }

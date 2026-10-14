@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useChat } from "@/context/ChatContext";
 import { Conversation } from "@/types/chat";
 import {
@@ -12,12 +12,18 @@ import {
   Check,
   X,
   Search,
-  Sparkles,
   Cpu,
-  Layers,
 } from "lucide-react";
 
+const emptySubscribe = () => () => {};
+
 export function Sidebar() {
+  const clientNow = React.useSyncExternalStore(
+    emptySubscribe,
+    () => Date.now(),
+    () => null
+  );
+
   const {
     conversations,
     activeId,
@@ -34,11 +40,6 @@ export function Sidebar() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
-  const [nowTime, setNowTime] = useState<number | null>(null);
-
-  useEffect(() => {
-    setNowTime(Date.now());
-  }, []);
 
   const startEditing = (conv: Conversation, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -76,7 +77,7 @@ export function Sidebar() {
     const last7Days: Conversation[] = [];
     const older: Conversation[] = [];
 
-    if (!nowTime) {
+    if (!clientNow) {
       for (const conv of filteredConversations) {
         if (conv.pinned) pinned.push(conv);
         else today.push(conv);
@@ -84,7 +85,7 @@ export function Sidebar() {
       return { pinned, today, yesterday, last7Days, older };
     }
 
-    const now = new Date(nowTime);
+    const now = new Date(clientNow);
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const startOfYesterday = startOfToday - 86400000;
     const startOfLast7Days = startOfToday - 7 * 86400000;
@@ -107,7 +108,7 @@ export function Sidebar() {
     }
 
     return { pinned, today, yesterday, last7Days, older };
-  }, [filteredConversations]);
+  }, [filteredConversations, clientNow]);
 
   if (!isSidebarOpen) return null;
 
@@ -115,8 +116,8 @@ export function Sidebar() {
     if (items.length === 0) return null;
 
     return (
-      <div className="mb-4">
-        <div className="px-3 py-1 text-[11px] font-semibold text-[var(--text-tertiary)] tracking-wider uppercase">
+      <div className="mb-3.5">
+        <div className="px-2.5 py-1 text-[11px] font-semibold text-[var(--text-tertiary)] tracking-wider uppercase">
           {title}
         </div>
         <div className="space-y-0.5 mt-0.5">
@@ -130,7 +131,7 @@ export function Sidebar() {
                 onClick={() => selectConversation(conv.id)}
                 className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-[6px] text-[13px] cursor-pointer transition-colors ${
                   isActive
-                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)]"
+                    ? "bg-[var(--surface-active)] font-medium text-[var(--text-primary)] shadow-sm"
                     : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
                 }`}
               >
@@ -139,7 +140,7 @@ export function Sidebar() {
                   {conv.pinned ? (
                     <Pin className="w-3.5 h-3.5 text-[var(--accent)] shrink-0 fill-[var(--accent)]/20" />
                   ) : (
-                    <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                    <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-60" />
                   )}
 
                   {isEditing ? (
@@ -160,16 +161,21 @@ export function Sidebar() {
                       />
                       <button
                         onClick={() => saveEditing(conv.id)}
-                        className="p-1 hover:text-[var(--text-primary)]"
+                        className="p-1 hover:text-[var(--text-primary)] text-emerald-500"
+                        title="Save title"
                       >
-                        <Check className="w-3.5 h-3.5 text-emerald-500" />
+                        <Check className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={cancelEditing} className="p-1 hover:text-[var(--text-primary)]">
-                        <X className="w-3.5 h-3.5 text-red-500" />
+                      <button
+                        onClick={cancelEditing}
+                        className="p-1 hover:text-[var(--text-primary)] text-red-500"
+                        title="Cancel"
+                      >
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
-                    <span className="truncate flex-1">{conv.title}</span>
+                    <span className="truncate flex-1 text-[12.5px] leading-tight">{conv.title}</span>
                   )}
                 </div>
 
@@ -214,12 +220,12 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-[250px] min-w-[250px] max-w-[250px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
-      {/* Search Header */}
-      <div className="p-3 pb-2 space-y-2">
+    <aside className="w-[260px] min-w-[260px] max-w-[260px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
+      {/* Search & New Chat Header */}
+      <div className="p-2.5 pb-2 space-y-1.5 border-b border-[var(--border-subtle)]">
         <button
           onClick={() => createConversation()}
-          className="w-full flex items-center justify-between px-3 py-1.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text-primary)] text-[12px] font-medium shadow-[var(--shadow-sm)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-all"
+          className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text-primary)] text-[12px] font-medium shadow-[var(--shadow-sm)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-all"
         >
           <span className="flex items-center gap-2">
             <Plus className="w-3.5 h-3.5 text-[var(--accent)]" />
@@ -236,12 +242,13 @@ export function Sidebar() {
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-[6px] pl-8 pr-2.5 py-1 text-[12px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] outline-none focus:border-[var(--accent)] transition-colors"
+            className="w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-[6px] pl-8 pr-7 py-1 text-[12px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] outline-none focus:border-[var(--accent)] transition-colors"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] p-0.5 rounded"
+              title="Clear search"
             >
               <X className="w-3 h-3" />
             </button>
@@ -250,18 +257,18 @@ export function Sidebar() {
       </div>
 
       {/* Conversations Scroll Area */}
-      <div className="flex-1 overflow-y-auto px-2 py-1">
+      <div className="flex-1 overflow-y-auto px-2 py-2">
         {conversations.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-4 text-center">
-            <MessageSquare className="w-8 h-8 text-[var(--text-tertiary)] stroke-[1.5] mb-2 opacity-50" />
-            <p className="text-[12px] text-[var(--text-tertiary)]">No conversations yet</p>
+            <MessageSquare className="w-7 h-7 text-[var(--text-tertiary)] stroke-[1.5] mb-2 opacity-50" />
+            <p className="text-[12px] font-medium text-[var(--text-secondary)]">No conversations</p>
             <p className="text-[11px] text-[var(--text-tertiary)] mt-1">
               Press <kbd className="kbd">⌘N</kbd> to begin
             </p>
           </div>
         ) : filteredConversations.length === 0 ? (
           <div className="p-4 text-center text-[12px] text-[var(--text-tertiary)]">
-            No chats match &quot;{searchQuery}&quot;
+            No chats matching &quot;{searchQuery}&quot;
           </div>
         ) : (
           <>
@@ -275,16 +282,16 @@ export function Sidebar() {
       </div>
 
       {/* Footer System Status */}
-      <div className="p-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
+      <div className="p-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-secondary)] bg-[var(--bg-sidebar)]">
         <div className="flex items-center gap-1.5 truncate">
           <Cpu className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
-          <span className="truncate">
+          <span className="truncate font-mono">
             {ollamaStatus.models.length > 0
               ? `${ollamaStatus.models[0].name.split(":")[0]}`
               : "No models"}
           </span>
         </div>
-        <span className="text-[10px] text-[var(--text-tertiary)] shrink-0">
+        <span className="text-[10px] text-[var(--text-tertiary)] shrink-0 font-medium">
           {conversations.length} chat{conversations.length === 1 ? "" : "s"}
         </span>
       </div>

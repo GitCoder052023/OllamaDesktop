@@ -48,6 +48,7 @@ export function ImageLightbox() {
 
         {/* Image content */}
         <div className="flex items-center justify-center p-2 overflow-auto">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewImage}
             alt="Preview"

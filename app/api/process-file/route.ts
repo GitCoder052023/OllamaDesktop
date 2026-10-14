@@ -73,9 +73,10 @@ export async function POST(request: NextRequest) {
           previewUrl: null,
           base64Data: null,
         });
-      } catch (pdfErr: any) {
+      } catch (pdfErr: unknown) {
+        const errorMsg = pdfErr instanceof Error ? pdfErr.message : "Invalid or encrypted PDF";
         return NextResponse.json(
-          { error: `Failed to extract PDF text: ${pdfErr.message || "Invalid or encrypted PDF"}` },
+          { error: `Failed to extract PDF text: ${errorMsg}` },
           { status: 422 }
         );
       }
@@ -181,9 +182,10 @@ export async function POST(request: NextRequest) {
         { status: 415 }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : "Internal error processing file";
     return NextResponse.json(
-      { error: error.message || "Internal error processing file" },
+      { error: errorMsg },
       { status: 500 }
     );
   }

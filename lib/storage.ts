@@ -96,7 +96,9 @@ export function importAllData(jsonStr: string): { success: boolean; count: numbe
       saveStoredSettings({ ...DEFAULT_SETTINGS, ...data.settings });
     }
     return { success: true, count: data.conversations.length };
-  } catch (err: any) {
-    return { success: false, count: 0, error: err.message || "Failed to parse JSON file" };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Failed to parse JSON file";
+    return { success: false, count: 0, error: errorMsg };
   }
 }
+

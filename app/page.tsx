@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ChatProvider, useChat } from "@/context/ChatContext";
 import { WindowChrome } from "@/components/window/WindowChrome";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -29,15 +29,13 @@ function DesktopApp() {
     isSettingsOpen,
     isShortcutsOpen,
     settings,
+    updateSettings,
   } = useChat();
 
-  const [isWindowed, setIsWindowed] = useState(false);
-
-  useEffect(() => {
-    if (settings.windowFrameStyle) {
-      setIsWindowed(settings.windowFrameStyle === "windowed");
-    }
-  }, [settings.windowFrameStyle]);
+  const isWindowed = settings.windowFrameStyle === "windowed";
+  const toggleWindowed = () => {
+    updateSettings({ windowFrameStyle: isWindowed ? "full" : "windowed" });
+  };
 
   // Global macOS Keyboard Shortcuts
   useEffect(() => {
@@ -143,10 +141,10 @@ function DesktopApp() {
             : "rounded-none"
         }`}
       >
-        {/* Title Bar & Traffic Lights */}
+        {/* Application Toolbar */}
         <WindowChrome
           isWindowed={isWindowed}
-          setIsWindowed={setIsWindowed}
+          setIsWindowed={toggleWindowed}
         />
 
         {/* Content Body */}

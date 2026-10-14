@@ -13,7 +13,6 @@ import {
   ChatMessage,
   Attachment,
   OllamaStatus,
-  OllamaModel,
   AppSettings,
   MessageStats,
 } from "@/types/chat";
@@ -24,7 +23,6 @@ import {
   saveStoredActiveId,
   getStoredSettings,
   saveStoredSettings,
-  DEFAULT_SETTINGS,
   exportAllData,
   importAllData,
 } from "@/lib/storage";
@@ -79,9 +77,25 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | null>(null);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
+  // Apply theme to document
+  const applyTheme = (theme: "system" | "light" | "dark") => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (theme === "system") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", theme);
+    }
+  };
+
+  const [conversations, setConversations] = useState<Conversation[]>(() => getStoredConversations());
+  const [activeId, setActiveId] = useState<string | null>(() => {
+    const stored = getStoredActiveId();
+    const storedConvs = getStoredConversations();
+    if (stored && storedConvs.some((c) => c.id === stored)) return stored;
+    return storedConvs.length > 0 ? storedConvs[0].id : null;
+  });
+  const [settings, setSettings] = useState<AppSettings>(() => getStoredSettings());
   const [ollamaStatus, setOllamaStatus] = useState<OllamaStatus>({
     connected: false,
     host: "http://127.0.0.1:11434",
@@ -119,9 +133,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch(`/api/ollama/status?host=${encodeURIComponent(settings.ollamaHost)}`);
       const data: OllamaStatus = await res.json();
       setOllamaStatus(data);
-      if (!data.connected && data.error) {
-        // silent or subtle indicator
-      }
     } catch {
       setOllamaStatus({
         connected: false,
@@ -133,42 +144,37 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [settings.ollamaHost]);
 
-  // Initial load
+  // Initial setup and polling
   useEffect(() => {
-    const storedSettings = getStoredSettings();
-    setSettings(storedSettings);
+    applyTheme(settings.theme);
 
-    // Apply theme
-    applyTheme(storedSettings.theme);
+    let isMounted = true;
+    const check = async () => {
+      try {
+        const res = await fetch(`/api/ollama/status?host=${encodeURIComponent(settings.ollamaHost)}`);
+        const data: OllamaStatus = await res.json();
+        if (isMounted) setOllamaStatus(data);
+      } catch {
+        if (isMounted) {
+          setOllamaStatus({
+            connected: false,
+            host: settings.ollamaHost,
+            version: null,
+            models: [],
+            error: "Cannot connect to Ollama",
+          });
+        }
+      }
+    };
 
-    const storedConversations = getStoredConversations();
-    setConversations(storedConversations);
+    void check();
 
-    const storedActiveId = getStoredActiveId();
-    if (storedActiveId && storedConversations.some((c) => c.id === storedActiveId)) {
-      setActiveId(storedActiveId);
-    } else if (storedConversations.length > 0) {
-      setActiveId(storedConversations[0].id);
-      saveStoredActiveId(storedConversations[0].id);
-    }
-
-    refreshOllamaStatus();
-
-    // Check status periodically every 15s
-    const interval = setInterval(refreshOllamaStatus, 15000);
-    return () => clearInterval(interval);
-  }, [refreshOllamaStatus]);
-
-  // Apply theme to document
-  const applyTheme = (theme: "system" | "light" | "dark") => {
-    if (typeof document === "undefined") return;
-    const root = document.documentElement;
-    if (theme === "system") {
-      root.removeAttribute("data-theme");
-    } else {
-      root.setAttribute("data-theme", theme);
-    }
-  };
+    const interval = setInterval(check, 15000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [settings.ollamaHost, settings.theme]);
 
   const updateSettings = useCallback(
     (newSettings: Partial<AppSettings>) => {
@@ -374,21 +380,27 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Construct message history for Ollama
-      const history = targetConv.messages.map((m) => {
-        const item: any = {
+      interface ChatPayloadMessage {
+        role: string;
+        content: string;
+        images?: string[];
+      }
+
+      const history: ChatPayloadMessage[] = targetConv.messages.map((m) => {
+        const item: ChatPayloadMessage = {
           role: m.role,
           content: m.content,
         };
         if (m.attachments) {
           const imgs = m.attachments.filter((a) => a.fileType === "image" && a.base64Data);
           if (imgs.length > 0) {
-            item.images = imgs.map((i) => i.base64Data);
+            item.images = imgs.map((i) => i.base64Data as string);
           }
         }
         return item;
       });
 
-      const userPayloadItem: any = {
+      const userPayloadItem: ChatPayloadMessage = {
         role: "user",
         content: combinedContent,
       };
@@ -396,7 +408,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         userPayloadItem.images = imagesPayload;
       }
 
-      const fullMessages = [];
+      const fullMessages: ChatPayloadMessage[] = [];
       if (settings.systemPrompt) {
         fullMessages.push({
           role: "system",
@@ -495,7 +507,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                   promptEvalCount,
                 };
               }
-            } catch (parseErr) {
+            } catch {
               // Line may be split across chunks; ignore
             }
           }
@@ -523,15 +535,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           saveStoredConversations(updated);
           return updated;
         });
-      } catch (err: any) {
-        if (err.name === "AbortError") {
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
           // User aborted; persist whatever was received
           setConversations((prev) => {
             saveStoredConversations(prev);
             return prev;
           });
         } else {
-          const errorMessage = err.message || "Failed to generate response";
+          const errorMessage = err instanceof Error ? err.message : "Failed to generate response";
           setConversations((prev) => {
             const updated = prev.map((c) => {
               if (c.id === currentConvId) {

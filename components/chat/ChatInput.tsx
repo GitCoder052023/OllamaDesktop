@@ -9,10 +9,8 @@ import {
   Paperclip,
   FileText,
   FileCode,
-  Image as ImageIcon,
   X,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 
 interface ChatInputProps {
@@ -34,18 +32,19 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
+  // Sync external text during rendering per React 19 pattern
+  const [prevExternalText, setPrevExternalText] = useState(externalText);
+  if (externalText !== prevExternalText) {
+    setPrevExternalText(externalText);
+    if (externalText) {
+      setInput(externalText);
+    }
+  }
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync external text (e.g. from empty state prompt clicks)
-  useEffect(() => {
-    if (externalText) {
-      setInput(externalText);
-      textareaRef.current?.focus();
-    }
-  }, [externalText]);
-
-  // Auto-resize textarea
+  // Auto-resize textarea smoothly
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -68,10 +67,16 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
+      textareaRef.current.focus();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Handle IME composition (e.g. Japanese, Chinese, accent dead keys)
+    if (e.nativeEvent.isComposing || e.keyCode === 229) {
+      return;
+    }
+
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -105,8 +110,9 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
 
         newAttachments.push(data);
         showToast(`Attached ${file.name}`, "success");
-      } catch (err: any) {
-        showToast(err.message || `Error processing ${file.name}`, "error");
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : `Error processing ${file.name}`;
+        showToast(message, "error");
       }
     }
 
@@ -128,11 +134,11 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
-  const currentModel = activeConversation?.model || "qwen2.5-coder:7b";
+  const currentModel = activeConversation?.model || (ollamaStatus.models[0]?.name ?? "qwen2.5-coder:7b");
 
   return (
     <div className="p-3 md:p-4 max-w-3xl mx-auto w-full select-none">
-      {/* Hidden File Input */}
+      {/* Hidden File Picker */}
       <input
         type="file"
         ref={fileInputRef}
@@ -142,7 +148,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
         className="hidden"
       />
 
-      {/* Main Input Card Container */}
+      {/* Main Composer Box */}
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -159,7 +165,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             handleUploadFiles(e.dataTransfer.files);
           }
         }}
-        className={`relative rounded-[10px] bg-[var(--bg-elevated)] border transition-colors ${
+        className={`relative rounded-[10px] bg-[var(--bg-input)] border transition-all ${
           isDragOver
             ? "drop-zone-active"
             : "border-[var(--border-strong)] focus-within:border-[var(--accent)] shadow-[var(--shadow-sm)]"
@@ -167,7 +173,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
       >
         {/* Pending Attachments Tray */}
         {(attachments.length > 0 || isProcessingFile) && (
-          <div className="flex flex-wrap items-center gap-2 p-2.5 pb-0 border-b border-[var(--border)]/60">
+          <div className="flex flex-wrap items-center gap-2 p-2.5 pb-0 border-b border-[var(--border-subtle)]">
             {attachments.map((att) => {
               const isPdf = att.fileType === "pdf";
               const isImg = att.fileType === "image";
@@ -176,9 +182,10 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
               return (
                 <div
                   key={att.id}
-                  className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-[6px] bg-[var(--surface-hover)] border border-[var(--border)] text-[11px] text-[var(--text-primary)]"
+                  className="flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-[6px] bg-[var(--surface-hover)] border border-[var(--border)] text-[11.5px] text-[var(--text-primary)]"
                 >
                   {isImg && att.previewUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={att.previewUrl}
                       alt={att.name}
@@ -200,6 +207,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
                   <button
                     onClick={() => removeAttachment(att.id)}
                     className="p-0.5 rounded text-[var(--text-tertiary)] hover:text-red-500 transition-colors"
+                    title="Remove attachment"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -210,40 +218,40 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             {isProcessingFile && (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[var(--surface-hover)] text-[11px] text-[var(--text-secondary)]">
                 <Loader2 className="w-3 h-3 animate-spin text-[var(--accent)]" />
-                <span>Processing document...</span>
+                <span>Processing context...</span>
               </div>
             )}
           </div>
         )}
 
-        {/* Text Area */}
+        {/* Text Area & Action Controls */}
         <div className="p-2.5 flex items-end gap-2">
-          {/* File Attach Button */}
+          {/* File Attachment Button */}
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isProcessingFile || isStreaming}
             className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors disabled:opacity-40 shrink-0"
-            title="Attach documents, PDFs, or images"
+            title="Attach document, code, or image"
           >
             <Paperclip className="w-4 h-4 stroke-[1.8]" />
           </button>
 
-          {/* Text Input */}
+          {/* Text Area */}
           <textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            placeholder={`Message ${currentModel}... (Shift+Enter for newline)`}
-            className="selectable-text flex-1 max-h-[180px] min-h-[24px] py-1 bg-transparent border-0 outline-none resize-none text-[13.5px] leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
+            placeholder={`Message ${currentModel.split(":")[0]}... (Shift+Enter for newline)`}
+            className="selectable-text flex-1 max-h-[180px] min-h-[24px] py-1 bg-transparent border-0 outline-none resize-none text-[13.5px] leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-tertiary)] font-sans"
           />
 
-          {/* Send / Stop Button */}
+          {/* Send / Stop Generation Button */}
           {isStreaming ? (
             <button
               onClick={stopGeneration}
-              className="w-7 h-7 rounded-full bg-[#FF3B30] hover:bg-[#E0342A] text-white flex items-center justify-center transition-colors shrink-0"
+              className="w-7 h-7 rounded-full bg-[#FF3B30] hover:bg-[#E0342A] text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
               title="Stop Generation (Esc)"
             >
               <Square className="w-3 h-3 fill-current" />
@@ -252,7 +260,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             <button
               onClick={handleSend}
               disabled={!input.trim() && attachments.length === 0}
-              className="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] flex items-center justify-center transition-colors shrink-0"
+              className="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] flex items-center justify-center transition-colors shrink-0 shadow-sm"
               title="Send Message (Enter)"
             >
               <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
@@ -261,10 +269,10 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
         </div>
       </div>
 
-      {/* Footer Shortcut & Privacy Note */}
-      <div className="mt-1.5 px-2 flex items-center justify-between text-[11px] text-[var(--text-tertiary)]">
-        <span>Runs completely local via Ollama</span>
-        <div className="flex items-center gap-1.5">
+      {/* Footer Info & Shortcut Hint */}
+      <div className="mt-1.5 px-2 flex items-center justify-between text-[11px] text-[var(--text-tertiary)] font-sans">
+        <span>Running locally via Ollama • Private execution</span>
+        <div className="flex items-center gap-1">
           <span>Press</span>
           <kbd className="kbd">↵</kbd>
           <span>to send</span>

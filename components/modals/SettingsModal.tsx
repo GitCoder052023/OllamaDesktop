@@ -2,21 +2,17 @@
 
 import React, { useState, useRef } from "react";
 import { useChat } from "@/context/ChatContext";
+import { AppSettings } from "@/types/chat";
 import {
   X,
   Server,
   Sliders,
   Palette,
   Database,
-  Check,
   RefreshCw,
   Download,
   Upload,
-  Trash2,
   Cpu,
-  Eye,
-  AlertCircle,
-  ExternalLink,
   Sun,
   Moon,
 } from "lucide-react";
@@ -33,7 +29,6 @@ export function SettingsModal() {
     refreshOllamaStatus,
     exportData,
     importData,
-    showToast,
   } = useChat();
 
   const [activeTab, setActiveTab] = useState<Tab>("ollama");
@@ -355,7 +350,7 @@ export function SettingsModal() {
                     return (
                       <button
                         key={item.id}
-                        onClick={() => updateSettings({ theme: item.id as any })}
+                        onClick={() => updateSettings({ theme: item.id as AppSettings["theme"] })}
                         className={`p-3.5 rounded-[8px] border text-center flex flex-col items-center gap-2 transition-all ${
                           isSelected
                             ? "border-[var(--accent)] bg-[var(--surface-hover)] shadow-sm text-[var(--accent)] font-semibold"
@@ -383,7 +378,7 @@ export function SettingsModal() {
                     return (
                       <button
                         key={item.id}
-                        onClick={() => updateSettings({ windowFrameStyle: item.id as any })}
+                        onClick={() => updateSettings({ windowFrameStyle: item.id as AppSettings["windowFrameStyle"] })}
                         className={`p-3.5 rounded-[8px] border text-left flex flex-col gap-1 transition-all ${
                           isSelected
                             ? "border-[var(--accent)] bg-[var(--surface-hover)] shadow-sm"

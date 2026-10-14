@@ -9,15 +9,12 @@ import { CodeBlock } from "./CodeBlock";
 import {
   FileText,
   FileCode,
-  Image as ImageIcon,
   Copy,
   Check,
   RotateCw,
-  Sparkles,
   Bot,
   User,
   AlertTriangle,
-  Zap,
   ExternalLink,
 } from "lucide-react";
 
@@ -63,33 +60,33 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
 
   return (
     <div
-      className={`py-5 px-4 md:px-8 border-b border-[var(--border)] transition-colors ${
+      className={`py-4 px-4 md:px-8 border-b border-[var(--border)] transition-colors ${
         isUser
           ? "bg-transparent"
-          : "bg-[var(--surface-hover)]/40"
+          : "bg-[var(--surface-hover)]/35"
       }`}
     >
-      <div className="max-w-3xl mx-auto flex gap-4">
-        {/* Avatar */}
+      <div className="max-w-3xl mx-auto flex gap-3.5">
+        {/* Avatar Glyph */}
         <div className="shrink-0 pt-0.5 select-none">
           {isUser ? (
             <div className="w-7 h-7 rounded-[7px] bg-[var(--surface-active)] border border-[var(--border)] flex items-center justify-center text-[var(--text-secondary)]">
-              <User className="w-4 h-4 stroke-[1.8]" />
+              <User className="w-3.5 h-3.5 stroke-[2]" />
             </div>
           ) : (
-            <div className="w-7 h-7 rounded-[7px] bg-[var(--surface-hover)] border border-[var(--border)] text-[var(--accent)] flex items-center justify-center shadow-none">
-              <Bot className="w-4 h-4 stroke-[1.8]" />
+            <div className="w-7 h-7 rounded-[7px] bg-[var(--accent-subtle)] border border-[var(--accent)]/20 text-[var(--accent)] flex items-center justify-center">
+              <Bot className="w-4 h-4 stroke-[2]" />
             </div>
           )}
         </div>
 
         {/* Content Area */}
         <div className="flex-1 min-w-0">
-          {/* Header Role & Model */}
+          {/* Header: Role & Model Indicator */}
           <div className="flex items-center justify-between mb-1.5 select-none">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-[13px] text-[var(--text-primary)]">
-                {isUser ? "You" : "Ollama"}
+                {isUser ? "You" : "Assistant"}
               </span>
               {!isUser && message.model && (
                 <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[4px] bg-[var(--surface-hover)] text-[var(--text-secondary)] border border-[var(--border)]">
@@ -100,7 +97,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
 
             {/* Quick Actions for Assistant */}
             {isAssistant && !isStreaming && message.content && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
                 <button
                   onClick={handleCopy}
                   className="p-1 rounded-[4px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
@@ -128,7 +125,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
           {/* User Attachments List */}
           {message.attachments && message.attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
-              {message.attachments.map((att) => {
+              {message.attachments.map((att: Attachment) => {
                 const isPdf = att.fileType === "pdf";
                 const isImg = att.fileType === "image";
                 const isCode = att.fileType === "code";
@@ -137,13 +134,14 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                   return (
                     <div
                       key={att.id}
-                      onClick={() => setPreviewImage(att.previewUrl!)}
+                      onClick={() => setPreviewImage(att.previewUrl || null)}
                       className="group relative cursor-pointer rounded-[8px] overflow-hidden border border-[var(--border)] hover:border-[var(--accent)] shadow-sm transition-all"
                     >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={att.previewUrl}
                         alt={att.name}
-                        className="h-24 w-auto max-w-[200px] object-cover group-hover:scale-105 transition-transform duration-200"
+                        className="h-20 w-auto max-w-[200px] object-cover group-hover:scale-105 transition-transform duration-200"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[11px] font-medium transition-opacity">
                         <ExternalLink className="w-3.5 h-3.5 mr-1" /> View Full
@@ -156,7 +154,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                   <button
                     key={att.id}
                     onClick={() => setPreviewDocument(att)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] shadow-sm transition-all text-left text-[12px] group"
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] shadow-sm transition-all text-left text-[12px] group"
                     title="Click to view extracted context"
                   >
                     {isPdf ? (
@@ -174,7 +172,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                     )}
 
                     <div className="flex flex-col">
-                      <span className="font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors truncate max-w-[220px]">
+                      <span className="font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors truncate max-w-[200px]">
                         {att.name}
                       </span>
                       <span className="text-[10px] text-[var(--text-tertiary)]">
@@ -189,14 +187,14 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
             </div>
           )}
 
-          {/* Vision Capability Advisory for Non-Vision Models */}
+          {/* Multimodal Vision Advisory */}
           {isAssistant && hasImageAttachment && !modelSupportsVision && (
             <div className="mb-3 p-3 rounded-[8px] bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-[12px] flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
               <div>
-                <p className="font-semibold">Notice: Vision model required for image analysis</p>
-                <p className="text-[11.5px] mt-0.5 opacity-90">
-                  The active model <code className="font-mono">{currentModelName}</code> does not have native multimodal vision capabilities. To analyze images, run <code className="font-mono">ollama run llama3.2-vision</code> or switch to a vision model in the model selector.
+                <p className="font-semibold">Notice: Vision model required for image inspection</p>
+                <p className="text-[11.5px] mt-0.5 opacity-90 leading-relaxed">
+                  The model <code className="font-mono">{currentModelName}</code> does not feature vision capabilities. To analyze images, pull a vision model such as <code className="font-mono">ollama run llama3.2-vision</code> or switch models in the toolbar.
                 </p>
               </div>
             </div>
@@ -213,7 +211,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    code({ className, children, ...props }: any) {
+                    code({ className, children, ...props }: React.ComponentPropsWithoutRef<"code">) {
                       const match = /language-(\w+)/.exec(className || "");
                       const isInline = !match && !String(children).includes("\n");
 
@@ -237,7 +235,7 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
                   {message.content}
                 </ReactMarkdown>
 
-                {/* Streaming Cursor */}
+                {/* Streaming Indicator */}
                 {isStreaming && isLast && (
                   <span className="inline-block w-1.5 h-3.5 ml-1 bg-[var(--accent)] align-middle animate-pulse rounded-sm" />
                 )}
@@ -245,11 +243,11 @@ export function ChatMessageItem({ message, isLast }: ChatMessageItemProps) {
             )}
           </div>
 
-          {/* Assistant Generation Stats Footer */}
+          {/* Generation Stats Footer */}
           {isAssistant && message.stats && (
-            <div className="mt-3 pt-1.5 flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] select-none font-mono">
+            <div className="mt-2.5 pt-1 flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] select-none font-mono">
               {message.stats.tokensPerSecond ? (
-                <span className="text-[var(--text-secondary)]">
+                <span className="text-[var(--text-secondary)] font-medium">
                   {message.stats.tokensPerSecond} tok/s
                 </span>
               ) : null}

@@ -23,13 +23,12 @@ interface PaletteItem {
   title: string;
   subtitle?: string;
   shortcut?: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   run: () => void;
 }
 
-export function CommandPalette() {
+function CommandPaletteDialog() {
   const {
-    isCommandPaletteOpen,
     setIsCommandPaletteOpen,
     conversations,
     selectConversation,
@@ -40,7 +39,6 @@ export function CommandPalette() {
     setIsSettingsOpen,
     setIsShortcutsOpen,
     setIsSidebarOpen,
-    settings,
     updateSettings,
     ollamaStatus,
     exportData,
@@ -51,12 +49,8 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isCommandPaletteOpen) {
-      setQuery("");
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
-  }, [isCommandPaletteOpen]);
+    inputRef.current?.focus();
+  }, []);
 
   // Command items
   const items = useMemo<PaletteItem[]>(() => {
@@ -234,8 +228,6 @@ export function CommandPalette() {
     }
   };
 
-  if (!isCommandPaletteOpen) return null;
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-150 select-none"
@@ -257,7 +249,7 @@ export function CommandPalette() {
               setSelectedIndex(0);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command, model, or search chats..."
+            placeholder="Search conversations, models, or actions..."
             className="w-full bg-transparent border-0 outline-none text-[13.5px] text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
           />
           <kbd className="kbd">Esc</kbd>
@@ -337,4 +329,10 @@ export function CommandPalette() {
       </div>
     </div>
   );
+}
+
+export function CommandPalette() {
+  const { isCommandPaletteOpen } = useChat();
+  if (!isCommandPaletteOpen) return null;
+  return <CommandPaletteDialog />;
 }
