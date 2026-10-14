@@ -45,7 +45,7 @@ export function ChatContainer() {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto relative"
+        className={`flex-1 overflow-y-auto relative ${messages.length === 0 ? "flex flex-col items-center justify-center" : ""}`}
       >
         {messages.length === 0 ? (
           <EmptyState
