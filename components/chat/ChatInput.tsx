@@ -12,6 +12,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import { ModelSelector } from "@/components/model-selector/ModelSelector";
 import { SessionParametersPopover } from "@/components/toolbar/SessionParametersPopover";
 
 interface ChatInputProps {
@@ -166,7 +167,7 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             handleUploadFiles(e.dataTransfer.files);
           }
         }}
-        className={`relative rounded-[10px] bg-[var(--bg-input)] border transition-all ${
+        className={`relative rounded-[12px] bg-[var(--bg-input)] border transition-all flex flex-col ${
           isDragOver
             ? "drop-zone-active"
             : "border-[var(--border-strong)] focus-within:border-[var(--accent)] shadow-[var(--shadow-sm)]"
@@ -225,22 +226,8 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
           </div>
         )}
 
-        {/* Text Area & Action Controls */}
-        <div className="p-2.5 flex items-end gap-1.5">
-          {/* File Attachment Button */}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isProcessingFile || isStreaming}
-            className="p-1.5 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors disabled:opacity-40 shrink-0"
-            title="Attach document, code, or image"
-          >
-            <Paperclip className="w-4 h-4 stroke-[1.8]" />
-          </button>
-
-          {/* Session Parameters Quick Popover */}
-          <SessionParametersPopover buttonVariant="compact" align="left" />
-
-          {/* Text Area */}
+        {/* Text Area */}
+        <div className="p-3 pb-1.5 flex items-start">
           <textarea
             ref={textareaRef}
             value={input}
@@ -248,38 +235,62 @@ export function ChatInput({ onSendMessage, externalText }: ChatInputProps) {
             onKeyDown={handleKeyDown}
             rows={1}
             placeholder={`Message ${currentModel.split(":")[0]}...`}
-            className="selectable-text flex-1 max-h-[180px] min-h-[24px] py-1 bg-transparent border-0 outline-none resize-none text-[13.5px] leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-tertiary)] font-sans"
+            className="selectable-text w-full max-h-[180px] min-h-[30px] py-1 bg-transparent border-0 outline-none resize-none text-[13.5px] leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-tertiary)] font-sans"
           />
+        </div>
 
-          {/* Send / Stop Generation Button */}
-          {isStreaming ? (
+        {/* Input Field Bottom Toolbar */}
+        <div className="px-2.5 pb-2 pt-1 flex items-center justify-between border-t border-[var(--border-subtle)]">
+          {/* Left Actions: Attachments, Model Selector, Session Parameters */}
+          <div className="flex items-center gap-1.5 min-w-0">
+            {/* File Attachment Button */}
             <button
-              onClick={stopGeneration}
-              className="w-7 h-7 rounded-full bg-[#FF3B30] hover:bg-[#E0342A] text-white flex items-center justify-center transition-colors shrink-0 shadow-sm"
-              title="Stop Generation (Esc)"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessingFile || isStreaming}
+              className="h-7 w-7 rounded-[6px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors disabled:opacity-40 flex items-center justify-center shrink-0 border border-transparent hover:border-[var(--border-subtle)]"
+              title="Attach document, code, or image"
+              aria-label="Attach file"
             >
-              <Square className="w-3 h-3 fill-current" />
+              <Paperclip className="w-3.5 h-3.5 stroke-[1.8]" />
             </button>
-          ) : (
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() && attachments.length === 0}
-              className="w-7 h-7 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] flex items-center justify-center transition-colors shrink-0 shadow-sm"
-              title="Send Message (Enter)"
-            >
-              <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
-            </button>
-          )}
+
+            {/* Model Selector in the Input Field */}
+            <ModelSelector placement="top" align="left" buttonVariant="input" />
+
+            {/* Session Parameters in the Input Field */}
+            <SessionParametersPopover placement="top" align="left" buttonVariant="input" />
+          </div>
+
+          {/* Right Action: Send / Stop */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isStreaming ? (
+              <button
+                onClick={stopGeneration}
+                className="h-7 px-2.5 rounded-[6px] bg-[#FF3B30] hover:bg-[#E0342A] text-white flex items-center gap-1.5 transition-colors shrink-0 shadow-xs text-[11.5px] font-medium"
+                title="Stop Generation (Esc)"
+              >
+                <Square className="w-3 h-3 fill-current" />
+                <span>Stop</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() && attachments.length === 0}
+                className="w-7 h-7 rounded-[6px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white disabled:opacity-30 disabled:hover:bg-[var(--accent)] flex items-center justify-center transition-all shrink-0 shadow-xs active:scale-95"
+                title="Send Message (Return)"
+                aria-label="Send Message"
+              >
+                <ArrowUp className="w-3.5 h-3.5 stroke-[2.2]" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Footer Info & Shortcut Helper */}
       <div className="mt-1.5 px-1 flex items-center justify-between text-[10.5px] text-[var(--text-tertiary)] font-sans select-none">
-        <div className="flex items-center gap-1.5 font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>{currentModel}</span>
-        </div>
-        <span className="opacity-75">Shift + Return for newline • Return to send</span>
+        <span className="opacity-75">Return to send • Shift + Return for new line</span>
+        <span className="opacity-60 hidden sm:inline">Drop files or images anywhere to attach</span>
       </div>
     </div>
   );

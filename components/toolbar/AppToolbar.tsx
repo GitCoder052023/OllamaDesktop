@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { useChat } from "@/context/ChatContext";
-import { ModelSelector } from "@/components/model-selector/ModelSelector";
-import { SessionParametersPopover } from "@/components/toolbar/SessionParametersPopover";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -11,22 +10,13 @@ import {
   Search,
   Settings,
   HelpCircle,
-  Maximize2,
-  Minimize2,
   Share2,
   Trash2,
   Square,
 } from "lucide-react";
 
-interface AppToolbarProps {
-  isWindowed?: boolean;
-  onToggleWindowed?: () => void;
-}
-
-export function AppToolbar({
-  isWindowed = false,
-  onToggleWindowed,
-}: AppToolbarProps) {
+export function AppToolbar() {
+  const router = useRouter();
   const {
     activeConversation,
     isSidebarOpen,
@@ -34,7 +24,6 @@ export function AppToolbar({
     createConversation,
     clearCurrentConversation,
     setIsCommandPaletteOpen,
-    setIsSettingsOpen,
     setIsShortcutsOpen,
     ollamaStatus,
     refreshOllamaStatus,
@@ -44,7 +33,7 @@ export function AppToolbar({
   } = useChat();
 
   const handleStatusClick = async () => {
-    showToast("Checking Ollama connection...", "info");
+    showToast("Checking Ollama daemon status...", "info");
     await refreshOllamaStatus();
   };
 
@@ -71,8 +60,8 @@ export function AppToolbar({
   const hasMessages = Boolean(activeConversation && activeConversation.messages.length > 0);
 
   return (
-    <header className="h-[48px] min-h-[48px] select-none border-b border-[var(--border)] bg-[var(--bg-toolbar)] macos-vibrancy flex items-center justify-between px-3 z-30 relative">
-      {/* 1. Left Region: Navigation */}
+    <header className="h-[44px] min-h-[44px] select-none border-b border-[var(--border)] bg-[var(--bg-toolbar)] macos-vibrancy flex items-center justify-between px-3 z-30 relative">
+      {/* 1. Left Region: Navigation Controls */}
       <div className="flex items-center gap-1 shrink-0">
         {/* Sidebar Toggle */}
         <button
@@ -104,37 +93,25 @@ export function AppToolbar({
         </button>
       </div>
 
-      {/* 2. Center Region: Active Context */}
-      <div className="flex-1 flex items-center justify-center px-2 min-w-0">
+      {/* 2. Center Region: Clean Window Title */}
+      <div className="flex-1 flex items-center justify-center px-4 min-w-0 pointer-events-none select-none">
         {hasMessages && activeConversation ? (
-          <div className="flex items-center gap-2 min-w-0 max-w-[500px]">
-            <span
-              className="text-[12.5px] font-medium text-[var(--text-primary)] truncate max-w-[120px] sm:max-w-[190px] md:max-w-[250px]"
-              title={activeConversation.title}
-            >
-              {activeConversation.title}
-            </span>
-            <span className="text-[var(--text-tertiary)] text-[10px] select-none shrink-0">•</span>
-            <div className="flex items-center gap-0.5 shrink-0">
-              <ModelSelector align="center" />
-              <SessionParametersPopover align="center" buttonVariant="icon" />
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-0.5 shrink-0">
-            <ModelSelector align="center" />
-            <SessionParametersPopover align="center" buttonVariant="icon" />
-          </div>
-        )}
+          <span
+            className="text-[13px] font-medium text-[var(--text-primary)] truncate max-w-[200px] sm:max-w-[320px] md:max-w-[420px]"
+            title={activeConversation.title}
+          >
+            {activeConversation.title}
+          </span>
+        ) : null}
       </div>
 
-      {/* 3. Right Region: Utilities & Status */}
+      {/* 3. Right Region: Clean Toolbar Actions & Status */}
       <div className="flex items-center gap-1 shrink-0">
         {/* Streaming Stop Control */}
         {isStreaming && (
           <button
             onClick={stopGeneration}
-            className="h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 active:bg-red-500/15 transition-colors shrink-0 mr-0.5"
+            className="h-7 px-2.5 rounded-[6px] flex items-center gap-1.5 text-[11.5px] font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 active:bg-red-500/15 transition-colors shrink-0 mr-1"
             title="Stop Generation (Esc)"
             aria-label="Stop Generation"
           >
@@ -165,15 +142,15 @@ export function AppToolbar({
           </div>
         )}
 
-        {/* Hairline Divider before global actions */}
+        {/* Hairline Divider before system status & utilities */}
         {(hasMessages || isStreaming) && (
           <div className="w-[1px] h-3.5 bg-[var(--border)] shrink-0 mx-0.5" />
         )}
 
-        {/* Quiet Ollama Connection Status Button */}
+        {/* Ollama Connection Status Button */}
         <button
           onClick={handleStatusClick}
-          className="h-7 px-1.5 sm:px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
+          className="h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[11.5px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
           title={
             ollamaStatus.connected
               ? `Ollama connected (${ollamaStatus.models.length} model${
@@ -188,7 +165,7 @@ export function AppToolbar({
               ollamaStatus.connected ? "bg-emerald-500" : "bg-red-500 animate-pulse"
             }`}
           />
-          <span className="hidden xl:inline text-[11px] text-[var(--text-tertiary)] font-normal">
+          <span className="hidden md:inline text-[11px] text-[var(--text-tertiary)] font-normal">
             {ollamaStatus.connected ? "Connected" : "Offline"}
           </span>
         </button>
@@ -196,12 +173,12 @@ export function AppToolbar({
         {/* Command Search Trigger */}
         <button
           onClick={() => setIsCommandPaletteOpen(true)}
-          className="h-7 px-1.5 sm:px-2 rounded-[6px] flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors text-[11.5px]"
+          className="h-7 px-2 rounded-[6px] flex items-center gap-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors text-[11.5px]"
           title="Search Conversations & Commands (⌘K)"
           aria-label="Search and Commands"
         >
           <Search className="w-3.5 h-3.5 stroke-[1.8]" />
-          <kbd className="hidden md:inline font-mono text-[9px] px-1 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-tertiary)]">
+          <kbd className="hidden lg:inline font-mono text-[9px] px-1 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-tertiary)] border border-[var(--border-subtle)]">
             ⌘K
           </kbd>
         </button>
@@ -218,29 +195,13 @@ export function AppToolbar({
 
         {/* Preferences / Settings Trigger */}
         <button
-          onClick={() => setIsSettingsOpen(true)}
+          onClick={() => router.push("/settings")}
           className="h-7 w-7 rounded-[6px] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
           title="Preferences (⌘,)"
           aria-label="Preferences"
         >
           <Settings className="w-3.5 h-3.5 stroke-[1.8]" />
         </button>
-
-        {/* Window Viewport Presentation Toggle (Optional frame) */}
-        {onToggleWindowed && (
-          <button
-            onClick={onToggleWindowed}
-            className="h-7 w-7 rounded-[6px] hidden sm:flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-active)] transition-colors"
-            title={isWindowed ? "Expand Full Viewport" : "Show Desktop Window Frame"}
-            aria-label="Toggle Window Frame Style"
-          >
-            {isWindowed ? (
-              <Maximize2 className="w-3.5 h-3.5 stroke-[1.8]" />
-            ) : (
-              <Minimize2 className="w-3.5 h-3.5 stroke-[1.8]" />
-            )}
-          </button>
-        )}
       </div>
     </header>
   );

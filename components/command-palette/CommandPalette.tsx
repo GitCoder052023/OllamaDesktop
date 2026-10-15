@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useChat } from "@/context/ChatContext";
 import {
   Search,
@@ -16,6 +17,7 @@ import {
   Share2,
   ArrowRight,
 } from "lucide-react";
+import { OllamaLogo } from "@/components/ui/OllamaLogo";
 
 interface PaletteItem {
   id: string;
@@ -28,6 +30,7 @@ interface PaletteItem {
 }
 
 function CommandPaletteDialog() {
+  const router = useRouter();
   const {
     setIsCommandPaletteOpen,
     conversations,
@@ -36,7 +39,6 @@ function CommandPaletteDialog() {
     activeConversation,
     changeConversationModel,
     clearCurrentConversation,
-    setIsSettingsOpen,
     setIsShortcutsOpen,
     setIsSidebarOpen,
     updateSettings,
@@ -75,7 +77,7 @@ function CommandPaletteDialog() {
         icon: Settings,
         shortcut: "⌘,",
         run: () => {
-          setIsSettingsOpen(true);
+          router.push("/settings");
           setIsCommandPaletteOpen(false);
         },
       },
@@ -202,7 +204,7 @@ function CommandPaletteDialog() {
     selectConversation,
     changeConversationModel,
     clearCurrentConversation,
-    setIsSettingsOpen,
+    router,
     setIsShortcutsOpen,
     setIsSidebarOpen,
     setIsCommandPaletteOpen,
@@ -323,8 +325,14 @@ function CommandPaletteDialog() {
 
         {/* Footer */}
         <div className="px-4 py-2 bg-[var(--surface-hover)] border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-tertiary)]">
-          <span>Navigate with ↑ ↓</span>
-          <span>Press ↵ to select</span>
+          <div className="flex items-center gap-1.5">
+            <OllamaLogo className="w-3 h-3 text-[var(--accent)]" />
+            <span className="font-semibold text-[10.5px] text-[var(--text-secondary)]">OllamaDesktop</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>Navigate ↑ ↓</span>
+            <span>↵ Select</span>
+          </div>
         </div>
       </div>
     </div>

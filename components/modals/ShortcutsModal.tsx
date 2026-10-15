@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useChat } from "@/context/ChatContext";
-import { X, Command } from "lucide-react";
+import { X } from "lucide-react";
+import { OllamaLogo } from "@/components/ui/OllamaLogo";
 
 export function ShortcutsModal() {
   const { isShortcutsOpen, setIsShortcutsOpen } = useChat();
@@ -45,9 +46,11 @@ export function ShortcutsModal() {
         {/* Titlebar */}
         <div className="h-[48px] px-4 border-b border-[var(--border)] bg-[var(--bg-titlebar)] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Command className="w-4 h-4 text-[var(--accent)]" />
+            <div className="w-5 h-5 rounded-[5px] bg-[var(--surface-active)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)] shadow-xs">
+              <OllamaLogo className="w-3.5 h-3.5" />
+            </div>
             <span className="font-semibold text-[13px] text-[var(--text-primary)]">
-              Keyboard Shortcuts
+              Ollama<span className="text-[var(--accent)]">Desktop</span> Shortcuts
             </span>
           </div>
           <button

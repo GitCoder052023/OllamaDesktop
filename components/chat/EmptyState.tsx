@@ -3,8 +3,6 @@
 import React, { useState } from "react";
 import { useChat } from "@/context/ChatContext";
 import {
-  Terminal,
-  AlertCircle,
   RefreshCw,
   Copy,
   Check,
@@ -14,6 +12,7 @@ import {
   FileSearch,
   ArrowRight,
 } from "lucide-react";
+import { OllamaLogo } from "@/components/ui/OllamaLogo";
 
 interface EmptyStateProps {
   onSelectPrompt: (prompt: string) => void;
@@ -70,8 +69,8 @@ export function EmptyState({ onSelectPrompt }: EmptyStateProps) {
   if (!ollamaStatus.connected) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 max-w-sm mx-auto text-center select-none">
-        <div className="w-10 h-10 rounded-[8px] bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3 text-red-500">
-          <AlertCircle className="w-5 h-5 stroke-[2]" />
+        <div className="w-11 h-11 rounded-[12px] bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3 text-red-500 shadow-xs">
+          <OllamaLogo className="w-6 h-6" />
         </div>
 
         <h2 className="text-[15px] font-semibold text-[var(--text-primary)] tracking-tight mb-1">
@@ -79,7 +78,7 @@ export function EmptyState({ onSelectPrompt }: EmptyStateProps) {
         </h2>
 
         <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
-          Cannot reach Ollama at <code className="font-mono text-[11px] bg-[var(--surface-hover)] px-1 py-0.5 rounded">{ollamaStatus.host}</code>. Ensure the Ollama daemon is running.
+          OllamaDesktop cannot reach Ollama at <code className="font-mono text-[11px] bg-[var(--surface-hover)] px-1 py-0.5 rounded">{ollamaStatus.host}</code>. Ensure the service is running.
         </p>
 
         <div className="w-full p-2.5 rounded-[6px] bg-[var(--surface-hover)] border border-[var(--border)] text-left mb-3.5 font-mono text-[11px] text-[var(--text-secondary)]">
@@ -116,8 +115,8 @@ export function EmptyState({ onSelectPrompt }: EmptyStateProps) {
   if (ollamaStatus.connected && ollamaStatus.models.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-6 max-w-sm mx-auto text-center select-none">
-        <div className="w-10 h-10 rounded-[8px] bg-[var(--accent-subtle)] border border-[var(--accent)]/20 flex items-center justify-center mb-3 text-[var(--accent)]">
-          <Terminal className="w-5 h-5 stroke-[2]" />
+        <div className="w-11 h-11 rounded-[12px] bg-[var(--accent-subtle)] border border-[var(--accent)]/20 flex items-center justify-center mb-3 text-[var(--accent)] shadow-xs">
+          <OllamaLogo className="w-6 h-6" />
         </div>
 
         <h2 className="text-[15px] font-semibold text-[var(--text-primary)] tracking-tight mb-1">
@@ -125,7 +124,7 @@ export function EmptyState({ onSelectPrompt }: EmptyStateProps) {
         </h2>
 
         <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
-          Ollama is running, but no models are downloaded yet. Pull a model in Terminal to begin.
+          OllamaDesktop is connected, but no models are downloaded yet. Pull a model in Terminal to begin.
         </p>
 
         <div className="w-full space-y-1.5 mb-4 text-left">
@@ -171,18 +170,18 @@ export function EmptyState({ onSelectPrompt }: EmptyStateProps) {
   // -------------------------------------------------------------
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 max-w-[820px] mx-auto w-full select-none">
-      {/* Restrained Application Identity */}
-      <div className="w-8 h-8 rounded-[8px] bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)] mb-3 shadow-[var(--shadow-sm)]">
-        <Terminal className="w-4 h-4 stroke-[2]" />
+      {/* Proper OllamaDesktop Brand Hero */}
+      <div className="w-12 h-12 rounded-[13px] bg-gradient-to-br from-[var(--surface-active)] to-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)] mb-3 shadow-xs">
+        <OllamaLogo className="w-6 h-6" />
       </div>
 
       {/* Clear, Inviting Welcome */}
-      <h1 className="text-[17px] font-semibold text-[var(--text-primary)] tracking-tight mb-1 text-center">
-        How can I help you today?
+      <h1 className="text-[18px] font-semibold text-[var(--text-primary)] tracking-tight mb-1 text-center">
+        Ollama<span className="text-[var(--accent)]">Desktop</span>
       </h1>
 
       <p className="text-[12.5px] text-[var(--text-secondary)] mb-6 text-center max-w-sm leading-relaxed">
-        Chat with local models, review code, and analyze documents privately.
+        Native local AI client for macOS. Private, offline, and blazing fast.
       </p>
 
       {/* Lightweight, Understated Starter Prompts */}

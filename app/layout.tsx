@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "Ollama Desktop — Native macOS AI",
-  description: "A polished, blazing-fast native macOS desktop client for local Ollama models",
+  title: "OllamaDesktop — Native macOS AI",
+  description: "OllamaDesktop: Fast, private, native macOS desktop client for locally running Ollama AI models",
   icons: {
     icon: "/favicon.ico",
   },
@@ -19,8 +20,8 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
-      <body className="h-full w-full overflow-hidden antialiased">
-        {children}
+      <body className="h-full w-full overflow-hidden antialiased bg-[var(--bg-primary)]">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

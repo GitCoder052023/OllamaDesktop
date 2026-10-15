@@ -13,6 +13,7 @@ import {
   X,
   Search,
 } from "lucide-react";
+import { OllamaLogo } from "@/components/ui/OllamaLogo";
 
 const emptySubscribe = () => () => {};
 
@@ -225,6 +226,21 @@ export function Sidebar() {
 
   return (
     <aside className="w-[260px] min-w-[260px] max-w-[260px] h-full flex flex-col border-r border-[var(--border)] bg-[var(--bg-sidebar)] macos-vibrancy select-none z-20">
+      {/* OllamaDesktop Brand Header */}
+      <div className="h-[44px] min-h-[44px] px-3 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-titlebar)] shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-[5px] bg-gradient-to-br from-[var(--surface-active)] to-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center text-[var(--accent)] shadow-xs">
+            <OllamaLogo className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-[12.5px] font-semibold tracking-tight text-[var(--text-primary)]">
+            Ollama<span className="text-[var(--accent)]">Desktop</span>
+          </span>
+        </div>
+        <span className="text-[9.5px] font-mono px-1.5 py-0.2 rounded bg-[var(--surface-active)] text-[var(--text-tertiary)] border border-[var(--border-subtle)] font-medium">
+          macOS
+        </span>
+      </div>
+
       {/* Integrated Search & New Chat Header */}
       <div className="p-2 border-b border-[var(--border)] flex items-center gap-1.5">
         <div className="relative flex-1">
